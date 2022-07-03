@@ -1,5 +1,5 @@
 import {nsx39TextMap} from 'https://rpgen3.github.io/nsx39/mjs/nsx39TextMap.mjs';
-const nsx39 = new class {
+export const nsx39 = new class {
     constructor() {
         this.midi = null;
         this.nsx39TextMap = nsx39TextMap;
