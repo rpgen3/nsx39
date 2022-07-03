@@ -2,9 +2,10 @@
     const {importAll, getScript} = await import(`https://rpgen3.github.io/mylib/export/import.mjs`);
     await Promise.all([
         'https://code.jquery.com/jquery-3.3.1.min.js',
-        'https://colxi.info/midi-parser-js/src/main.js'
+        'https://colxi.info/midi-parser-js/src/main.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/1.0.29/encoding.min.js'
     ].map(getScript));
-    const {$, MidiParser} = window;
+    const {$, MidiParser, Encoding} = window;
     const html = $('body').empty().css({
         'text-align': 'center',
         padding: '1em',
@@ -74,6 +75,15 @@
                 viewStatus('接続失敗');
             }
         }).addClass('btn');
+        rpgen3.addBtn(html, '「ら」を設定', async () => {
+            rpgen4.nsx39.setLyric('ら');
+        }).addClass('btn');
+        rpgen3.addBtn(html, '発声テスト', async () => {
+            rpgen4.nsx39.noteOn({ch: 0, pitch: 0x48, velocity: 100});
+            setTimeout(() => {
+                rpgen4.nsx39.noteOn({ch: 0, pitch: 0x48, velocity: 0});
+            }, 1000);
+        }).addClass('btn');
     }
     let g_midi = null;
     {
@@ -87,4 +97,51 @@
             g_midi = v;
         });
     }
+    let g_ust = null;
+    {
+        const {html} = addHideArea('input UST file');
+        $('<dt>').appendTo(html).text('USTファイル');
+        $('<input>').appendTo($('<dd>').appendTo(html)).prop({
+            type: 'file',
+            accept: '.ust'
+        }).on('change', async ({target}) => {
+            const {files} = target;
+            if(!files.length) return;
+            const file = files[0];
+            const a = new Uint8Array(await file.arrayBuffer());
+            g_ust = Encoding.convert(a, {
+                to: 'unicode',
+                from: Encoding.detect(a),
+                type: 'string'
+            });
+        });
+    }
+    {
+        const {html} = addHideArea('playing');
+        const ignoredChannel = rpgen3.addSelect(html, {
+            label: '演奏しないMIDIチャンネル',
+            list: [
+                ['指定なし', null],
+                [...Array(16).keys()].map(v => [v, v])
+            ],
+            save: true
+        });
+        $('<dd>').appendTo(html);
+        rpgen3.addBtn(html, '演奏データの作成', () => {
+            makeTimeline(ignoredChannel());
+        }).addClass('btn');
+        rpgen3.addBtn(html, '演奏中止', () => {
+            stopTimeline();
+        }).addClass('btn');
+        rpgen3.addBtn(html, '演奏開始', () => {
+            playTimeline();
+        }).addClass('btn');
+    }
+    const makeTimeline = ignoredChannel => {
+    };
+    const stopTimeline = () => {
+        rpgen4.nsx39.allSoundOff();
+    };
+    const playTimeline = () => {
+    };
 })();
