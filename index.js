@@ -58,14 +58,20 @@
     };
     {
         const {html} = addHideArea('init');
-        const status = $('<dd>').appendTo(html);
+        const viewStatus = (() => {
+            const holder = $('<dd>').appendTo(html);
+            const label = $('<span>').appendTo(holder).text('状態：');
+            const content = $('<span>').appendTo(holder);
+            return status => content.text(status);
+        })();
+        viewStatus('未接続');
         rpgen3.addBtn(html, 'NSX-39に接続', async () => {
             try {
                 await rpgen4.nsx39.requestMIDIAccess();
-                status.text('接続成功');
+                viewStatus('接続成功');
             } catch (err) {
                 console.error(err);
-                status.text('接続失敗');
+                viewStatus('接続失敗');
             }
         }).addClass('btn');
     }
