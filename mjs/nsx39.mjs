@@ -1,8 +1,8 @@
-import {nsx39textMap} from 'https://rpgen3.github.io/nsx39/mjs/nsx39textMap.mjs';
+import {nsx39TextMap} from 'https://rpgen3.github.io/nsx39/mjs/nsx39TextMap.mjs';
 const nsx39 = new class {
     constructor() {
         this.midi = null;
-        this.nsx39textMap = nsx39textMap;
+        this.nsx39TextMap = nsx39TextMap;
     }
     async requestMIDIAccess() {
         const midi = await navigator.requestMIDIAccess({
@@ -20,8 +20,8 @@ const nsx39 = new class {
         this.midi.send([0xF0, 0x43, 0x79, 0x09, 0x11, ...data, 0xF7]);
     }
     setLyric(lyric) {
-        if (lyric in this.nsx39textMap) {
-            const lyricId = this.nsx39textMap[lyric];
+        if (lyric in this.nsx39TextMap) {
+            const lyricId = this.nsx39TextMap[lyric];
             this.sendSysEx([0x0A, 0x00, lyricId]);
         }
     }
