@@ -16,6 +16,14 @@ export const nsx39 = new class {
     noteOn({ch, pitch, velocity}) {
         this.midi.send([0x90 + ch, pitch, velocity]);
     }
+    programChange({ch, program}) {
+        this.midi.send([0xC0 + ch, program])
+    }
+    allSoundOff() {
+        for (let i = 0; i < 0x10; i++) {
+            this.midi.send([0xB0 + i, 0x78, 0x00]);
+        }
+    }
     sendSysEx(data) {
         this.midi.send([0xF0, 0x43, 0x79, 0x09, 0x11, ...data, 0xF7]);
     }
