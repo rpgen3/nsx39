@@ -25,4 +25,4 @@ const nsx39 = new class {
             this.sendSysEx([0x0A, 0x00, lyricId]);
         }
     }
-};
+}();
