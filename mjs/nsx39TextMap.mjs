@@ -1,3 +1,4 @@
+// https://webgk.gakken.jp/otonanokagaku/nsx39/appli/01/js/nsx39.js
 export const nsx39TextMap = {
     ...{
         "あ": 0x00, "い": 0x01, "う": 0x02, "え": 0x03, "お": 0x04, "か": 0x05, "き": 0x06, "く": 0x07,
