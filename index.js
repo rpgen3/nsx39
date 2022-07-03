@@ -122,7 +122,7 @@
             label: '演奏しないMIDIチャンネル',
             list: [
                 ['指定なし', null],
-                [...Array(16).keys()].map(v => [v, v])
+                ...[...Array(16).keys()].map(v => [v, v])
             ],
             save: true
         });
