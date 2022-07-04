@@ -26,13 +26,14 @@
         [
             'MidiNote',
             'MidiNoteMessage',
-            'getTempos',
+            'MidiTempoMessage',
             'sec2delta'
         ].map(v => `https://rpgen3.github.io/piano/mjs/midi/${v}.mjs`),
         [
             'UstEvent',
             'UstNote',
             'UstNoteMessage',
+            'UstTempoMessage',
             'getUstTempos'
         ].map(v => `https://rpgen3.github.io/nsx39/mjs/${v}.mjs`)
     ].flat());
@@ -159,15 +160,15 @@
         const ustEventArray = rpgen4.UstEvent.makeArray(g_ust);
         const ustNoteArray = rpgen4.UstNote.makeArray(ustEventArray);
         return {
-            noteMessageArray: rpgen4.MidiNoteMessage.makeArray(ustNoteArray),
-            tempos: rpgen4.getUstTempos(ustEventArray)
+            noteMessageArray: rpgen4.UstNoteMessage.makeArray(ustNoteArray),
+            tempos: rpgen4.UstTempoMessage.makeArray(ustEventArray)
         };
     };
     const makeMidi = () => {
         const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi);
         return {
             noteMessageArray: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
-            tempos: rpgen4.getTempos(g_midi)
+            tempos: rpgen4.MidiTempoMessage.makeArray(g_midi)
         };
     };
     const mergeNoteMessageArrays = noteMessageArrays => {
