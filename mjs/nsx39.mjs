@@ -9,7 +9,7 @@ export const nsx39 = new class {
             sysex: true,
             software: true
         });
-        const nsx39 = [...midi.outputs].map(([_, v]) => v).find(v => v.name === 'NSX-39 ');
+        const nsx39 = [...midi.outputs].map(([_, v]) => v).find(({name}) => name === 'NSX-39 ');
         if (!nsx39) throw 'NSX-39 is not found.';
         this.midi = nsx39;
     }
