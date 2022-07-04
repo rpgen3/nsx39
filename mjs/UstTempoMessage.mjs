@@ -5,8 +5,8 @@ export class UstTempoMessage extends MidiTempoMessage {
         let currentTime = 0;
         for(const {length, tempo} of ustEventArray) {
             if (tempo !== null) result.push(new this({
-                tempo,
-                when: currentTime
+                when: currentTime,
+                tempo
             }));
             currentTime += length || 0;
         }
