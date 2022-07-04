@@ -34,7 +34,7 @@
             'UstNote',
             'UstNoteMessage',
             'UstTempoMessage',
-            'getUstTempos'
+            'nsx39'
         ].map(v => `https://rpgen3.github.io/nsx39/mjs/${v}.mjs`)
     ].flat());
     Promise.all([
