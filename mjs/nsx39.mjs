@@ -14,14 +14,14 @@ export const nsx39 = new class {
         this.midi = nsx39;
     }
     noteOn(timestamp, {ch, pitch, velocity}) {
-        this.midi.send([0x90 + ch, pitch, velocity], timestamp);
+        this.midi.send([0x90 | ch, pitch, velocity], timestamp);
     }
     programChange(timestamp, {ch, programChange}) {
-        this.midi.send([0xC0 + ch, programChange], timestamp)
+        this.midi.send([0xC0 | ch, programChange], timestamp)
     }
     allSoundOff(timestamp) {
         for (let i = 0; i < 0x10; i++) {
-            this.midi.send([0xB0 + i, 0x78, 0x00], timestamp);
+            this.midi.send([0xB0 | i, 0x78, 0x00], timestamp);
         }
     }
     sendSysEx(timestamp, data) {
