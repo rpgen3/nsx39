@@ -116,19 +116,38 @@
             });
         });
     }
+    const ignored_ust = 0;
+    const ignored_midi = 1;
+    const ignored_channel_1 = 2;
+    const swap_channel_1 = 3;
     {
         const {html} = addHideArea('playing');
-        const ignoredChannel = rpgen3.addSelect(html, {
-            label: '演奏しないMIDIチャンネル',
-            list: [
-                ['指定なし', null],
-                ...[...Array(16).keys()].map(v => [v, v])
-            ],
-            save: true
+        const avoidChannelConflict = rpgen3.addSelect(html, {
+            label: 'チャンネル衝突の回避設定',
+            save: true,
+            list: {
+                'USTを演奏しない': ignored_ust,
+                'MIDIを演奏しない': ignored_midi,
+                'MIDIチャンネル1を無視': ignored_channel_1,
+                'MIDIチャンネル1を交換': swap_channel_1
+            }
         });
+        const swapChannelHolder = $('<dl>').appendTo(html);
+        const swapChannel = rpgen3.addSelect(swapChannelHolder, {
+            label: 'チャンネル1の交換先',
+            save: true,
+            list: [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16]
+        });
+        avoidConflict.elm.on('change', () => {
+            if (avoidConflict() === swap_channel_1) swapChannelHolder.show();
+            else swapChannelHolder.hide();
+        }).trigger('change');
         $('<dd>').appendTo(html);
         rpgen3.addBtn(html, '演奏データの作成', () => {
-            makeTimeline(ignoredChannel());
+            makeTimeline({
+                avoidChannelConflict: avoidChannelConflict(),
+                swapChannel: swapChannel()
+            });
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏中止', () => {
             stopTimeline();
@@ -137,7 +156,13 @@
             playTimeline();
         }).addClass('btn');
     }
-    const makeTimeline = ignoredChannel => {
+    const makeTimeline = ({
+        avoidChannelConflict,
+        swapChannel
+    }) => {
+        const tempos = rpgen4.getTempos(g_midi);
+        const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi).filter(v => v.ch !== ignoredChannel);
+        const ustNoteArray = UstNote.makeArray(g_ust);
     };
     const stopTimeline = () => {
         rpgen4.nsx39.allSoundOff();
