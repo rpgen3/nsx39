@@ -78,13 +78,11 @@
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '「ら」を設定', async () => {
-            rpgen4.nsx39.setLyric('ら');
+            rpgen4.nsx39.setLyric(0, 'ら');
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
-            rpgen4.nsx39.noteOn({ch: 0, pitch: 0x48, velocity: 100});
-            setTimeout(() => {
-                rpgen4.nsx39.noteOn({ch: 0, pitch: 0x48, velocity: 0});
-            }, 1000);
+            rpgen4.nsx39.noteOn(0, {ch: 0, pitch: 0x48, velocity: 100});
+            rpgen4.nsx39.noteOn(1000, {ch: 0, pitch: 0x48, velocity: 0});
         }).addClass('btn');
     }
     let g_ust = null;
