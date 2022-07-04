@@ -16,8 +16,8 @@ export const nsx39 = new class {
     noteOn(timestamp, {ch, pitch, velocity}) {
         this.midi.send([0x90 + ch, pitch, velocity], timestamp);
     }
-    programChange(timestamp, {ch, program}) {
-        this.midi.send([0xC0 + ch, program], timestamp)
+    programChange(timestamp, {ch, programChange}) {
+        this.midi.send([0xC0 + ch, programChange], timestamp)
     }
     allSoundOff(timestamp) {
         for (let i = 0; i < 0x10; i++) {
