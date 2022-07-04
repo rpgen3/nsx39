@@ -17,30 +17,31 @@
     $('<h1>').appendTo(head).text('NSX-39の使用');
     $('<h2>').appendTo(head).text('MIDIとUSTで演奏');
     const rpgen3 = await importAll([
-        [
-            'input',
-            'css',
-            'util'
-        ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`)
-    ].flat());
+        'input',
+        'css',
+        'util'
+    ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
     const rpgen4 = await importAll([
-        'https://rpgen3.github.io/nsx39/mjs/nsx39.mjs',
         'https://rpgen3.github.io/maze/mjs/heap/Heap.mjs',
         [
             'MidiNote',
             'MidiNoteMessage',
             'getTempos',
             'sec2delta'
-        ].flat().map(v => `https://rpgen3.github.io/piano/mjs/midi/${v}.mjs`)
+        ].map(v => `https://rpgen3.github.io/piano/mjs/midi/${v}.mjs`),
+        [
+            'UstEvent',
+            'UstNote',
+            'UstNoteMessage',
+            'getUstTempos'
+        ].map(v => `https://rpgen3.github.io/nsx39/mjs/${v}.mjs`)
     ].flat());
     Promise.all([
-        [
-            'container',
-            'tab',
-            'img',
-            'btn'
-        ].map(v => `https://rpgen3.github.io/spatialFilter/css/${v}.css`)
-    ].flat().map(rpgen3.addCSS));
+        'container',
+        'tab',
+        'img',
+        'btn'
+    ].map(v => `https://rpgen3.github.io/spatialFilter/css/${v}.css`).map(rpgen3.addCSS));
     const hideTime = 500;
     const addHideArea = (label, parentNode = main) => {
         const html = $('<div>').addClass('container').appendTo(parentNode);
@@ -61,7 +62,7 @@
         const {html} = addHideArea('init');
         const viewStatus = (() => {
             const holder = $('<dd>').appendTo(html);
-            const label = $('<span>').appendTo(holder).text('状態：');
+            $('<span>').appendTo(holder).text('状態：');
             const content = $('<span>').appendTo(holder);
             return status => content.text(status);
         })();
@@ -85,18 +86,6 @@
             }, 1000);
         }).addClass('btn');
     }
-    let g_midi = null;
-    {
-        const {html} = addHideArea('input MIDI file');
-        $('<dt>').appendTo(html).text('MIDIファイル');
-        const inputFile = $('<input>').appendTo($('<dd>').appendTo(html)).prop({
-            type: 'file',
-            accept: '.mid'
-        });
-        MidiParser.parse(inputFile.get(0), v => {
-            g_midi = v;
-        });
-    }
     let g_ust = null;
     {
         const {html} = addHideArea('input UST file');
@@ -116,36 +105,46 @@
             });
         });
     }
-    const ignored_ust = 0;
-    const ignored_midi = 1;
-    const ignored_channel_1 = 2;
-    const swap_channel_1 = 3;
+    let g_midi = null;
+    {
+        const {html} = addHideArea('input MIDI file');
+        $('<dt>').appendTo(html).text('MIDIファイル');
+        const inputFile = $('<input>').appendTo($('<dd>').appendTo(html)).prop({
+            type: 'file',
+            accept: '.mid'
+        });
+        MidiParser.parse(inputFile.get(0), v => {
+            g_midi = v;
+        });
+    }
+    const playing_ust = 0;
+    const playing_midi = 1;
+    const playing_both = 2;
     {
         const {html} = addHideArea('playing');
-        const avoidChannelConflict = rpgen3.addSelect(html, {
-            label: 'チャンネル衝突の回避設定',
+        const howToPlay = rpgen3.addSelect(html, {
+            label: '演奏方法',
             save: true,
             list: {
-                'USTを演奏しない': ignored_ust,
-                'MIDIを演奏しない': ignored_midi,
-                'MIDIチャンネル1を無視': ignored_channel_1,
-                'MIDIチャンネル1を交換': swap_channel_1
+                'USTだけ演奏': playing_ust,
+                'MIDIだけ演奏': playing_midi,
+                '同時演奏': playing_both
             }
         });
-        const swapChannelHolder = $('<dl>').appendTo(html);
-        const swapChannel = rpgen3.addSelect(swapChannelHolder, {
-            label: 'チャンネル1の交換先',
+        $('<dd>').appendTo(html).text('同時演奏の場合');
+        $('<dd>').appendTo(html).text('Ch.1はUSTが独占します');
+        const swapChannel = rpgen3.addSelect(html, {
+            label: 'MIDIのCh.1の交換',
             save: true,
-            list: [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16]
+            list: [
+                ['交換しない', null],
+                ...[2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16].map(v => [`Ch.${v}`, v - 1])
+            ]
         });
-        avoidConflict.elm.on('change', () => {
-            if (avoidConflict() === swap_channel_1) swapChannelHolder.show();
-            else swapChannelHolder.hide();
-        }).trigger('change');
         $('<dd>').appendTo(html);
         rpgen3.addBtn(html, '演奏データの作成', () => {
-            makeTimeline({
-                avoidChannelConflict: avoidChannelConflict(),
+            const {noteMessageArray, tempos} = makeTimelineMaterial({
+                howToPlay: howToPlay(),
                 swapChannel: swapChannel()
             });
         }).addClass('btn');
@@ -156,13 +155,54 @@
             playTimeline();
         }).addClass('btn');
     }
-    const makeTimeline = ({
-        avoidChannelConflict,
+    const makeUst = () => {
+        const ustEventArray = rpgen4.UstEvent.makeArray(g_ust);
+        const ustNoteArray = rpgen4.UstNote.makeArray(ustEventArray);
+        return {
+            noteMessageArray: rpgen4.MidiNoteMessage.makeArray(ustNoteArray),
+            tempos: rpgen4.getUstTempos(ustEventArray)
+        };
+    };
+    const makeMidi = () => {
+        const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi);
+        return {
+            noteMessageArray: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
+            tempos: rpgen4.getTempos(g_midi)
+        };
+    };
+    const mergeNoteMessageArrays = noteMessageArrays => {
+        const heap = new rpgen4.Heap();
+        for (const noteMessageArray of noteMessageArrays) for(const noteMessage of noteMessageArray) heap.add(noteMessage.when, noteMessage);
+        return rpgen4.MidiNoteMessage.fixArray([...heap]);
+    };
+    const makeTimelineMaterial = ({
+        howToPlay,
         swapChannel
     }) => {
-        const tempos = rpgen4.getTempos(g_midi);
-        const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi).filter(v => v.ch !== ignoredChannel);
-        const ustNoteArray = UstNote.makeArray(g_ust);
+        switch (howToPlay) {
+            case playing_ust:
+                if (g_ust === null) throw 'Must input UST file.';
+                return makeUst();
+            case playing_midi:
+                if (g_midi === null) throw 'Must input MIDI file.';
+                return makeMidi();
+            case playing_both: {
+                if (g_ust === null) throw 'Must input UST file.';
+                if (g_midi === null) throw 'Must input MIDI file.';
+                const ust = makeUst();
+                const midi = makeMidi();
+                return {
+                    noteMessageArray: mergeNoteMessageArrays([
+                        ust.noteMessageArray,
+                        midi.noteMessageArray.filter(({ch}) => ch !== (swapChannel || 0)).map(v => {
+                            if (v.ch === 0) v.ch = swapChannel;
+                            return v;
+                        })
+                    ]),
+                    tempos: midi.tempos
+                };
+            }
+        }
     };
     const stopTimeline = () => {
         rpgen4.nsx39.allSoundOff();
