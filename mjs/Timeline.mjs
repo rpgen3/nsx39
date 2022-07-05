@@ -33,6 +33,7 @@ export class Timeline {
             startDeltaTime = when;
         }
         this.startTime = 0;
+        this.stopping = false;
     }
     factory(nullableArray) {
         return new ArrayAdvancer(Array.isArray(nullableArray) ? nullableArray : []);
@@ -66,15 +67,23 @@ export class Timeline {
             this.midiNotes.advance();
         }
     }
-    play() {
-        this.stop();
-        this.constructor.id = setTimeout(() => {
-            this.init();
-            this.constructor.id = setInterval(() => this.update());
-        }, 500);
+    async play() {
+        if (this.stopping) return;
+        await this.stop();
+        this.init();
+        this.constructor.id = setInterval(() => this.update());
     }
-    stop() {
+    async stop() {
+        if (this.stopping) return;
+        this.stopping = true;
         clearInterval(this.constructor.id);
-        nsx39.allSoundOff();
+        return new Promise(resolve => {
+            const id = setInterval(() => nsx39.allSoundOff());
+            setTimeout(() => {
+                clearInterval(id);
+                this.stopping = false;
+                resolve();
+            }, this.constructor.prepTime);
+        });
     }
 }
