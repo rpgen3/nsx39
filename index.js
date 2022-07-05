@@ -78,11 +78,16 @@
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '「ら」を設定', async () => {
-            rpgen4.nsx39.setLyric(0, 'ら');
+            rpgen4.nsx39.setLyric({data: {lyric: 'ら'}});
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
-            rpgen4.nsx39.noteOn(0, {ch: 0, pitch: 0x48, velocity: 100});
-            rpgen4.nsx39.noteOn(1000, {ch: 0, pitch: 0x48, velocity: 0});
+            rpgen4.nsx39.noteOn({
+                data: {channel: 0, pitch: 0x48, velocity: 100}
+            });
+            rpgen4.nsx39.noteOn({
+                data: {channel: 0, pitch: 0x48, velocity: 0},
+                timestamp: 1000
+            });
         }).addClass('btn');
     }
     let g_ust = null;
@@ -193,8 +198,8 @@
                 return {
                     noteMessageArray: mergeNoteMessageArrays([
                         ust.noteMessageArray,
-                        midi.noteMessageArray.filter(({ch}) => ch !== (swapChannel || 0)).map(v => {
-                            if (v.ch === 0) v.ch = swapChannel;
+                        midi.noteMessageArray.filter(({channel}) => channel !== (swapChannel || 0)).map(v => {
+                            if (v.channel === 0) v.channel = swapChannel;
                             return v;
                         })
                     ]),
