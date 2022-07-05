@@ -2,7 +2,6 @@ import {nsx39TextMap} from 'https://rpgen3.github.io/nsx39/mjs/nsx39TextMap.mjs'
 export const nsx39 = new class {
     constructor() {
         this.midiOutput = null;
-        this.nsx39TextMap = nsx39TextMap;
     }
     async requestMIDIAccess() {
         const midiAccess = await navigator.requestMIDIAccess({
@@ -50,7 +49,7 @@ export const nsx39 = new class {
     }
     setLyric({data: {lyric}, timestamp}) {
         if (lyric in this.nsx39TextMap) {
-            const lyricId = this.nsx39TextMap[lyric];
+            const lyricId = nsx39TextMap[lyric];
             this.sendSysEx({
                 data: [0x0A, 0x00, lyricId],
                 timestamp
