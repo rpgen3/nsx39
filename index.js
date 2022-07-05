@@ -173,40 +173,33 @@
             tempos: rpgen4.UstTempoMessage.makeArray(ustEventArray)
         };
     };
-    const makeMidi = () => {
+    const makeMidi = ({howToPlay, swapChannel}) => {
         const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi);
-        return {
-            midiNotes: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
-            tempos: rpgen4.MidiTempoMessage.makeArray(g_midi),
-            programChanges: rpgen4.MidiProgramChangeMessage.makeArray(g_midi)
-        };
-    };
-    const makeMessageArrays = ({
-        howToPlay,
-        swapChannel
-    }) => {
-        const swap = midiNotes => midiNotes.filter(({channel}) => channel !== (swapChannel || 0)).map(v => {
-            if (v.channel === 0) v.channel = swapChannel;
+        const mutedChannel = swapChannel || (howToPlay === playing_both ? 0 : null);
+        const swap = messages => messages.filter(({channel}) => channel !== mutedChannel).map(v => {
+            if (swapChannel !== null && v.channel === 0) v.channel = swapChannel;
             return v;
         });
-        const swapMidi = midi => ({
-            ...midi,
-            midiNotes: swap(midi.midiNotes),
-            programChanges: swap(midi.programChanges)
-        });
+        return {
+            midiNotes: swap(rpgen4.MidiNoteMessage.makeArray(midiNoteArray)),
+            tempos: rpgen4.MidiTempoMessage.makeArray(g_midi),
+            programChanges: swap(rpgen4.MidiProgramChangeMessage.makeArray(g_midi))
+        };
+    };
+    const makeMessageArrays = ({howToPlay, swapChannel}) => {
         switch (howToPlay) {
             case playing_ust:
                 if (g_ust === null) throw 'Must input UST file.';
                 return makeUst();
             case playing_midi:
                 if (g_midi === null) throw 'Must input MIDI file.';
-                return swapMidi(makeMidi());
+                return makeMidi({howToPlay, swapChannel});
             case playing_both:
                 if (g_ust === null) throw 'Must input UST file.';
                 if (g_midi === null) throw 'Must input MIDI file.';
                 return {
                     ...makeUst(),
-                    ...swapMidi(makeMidi())
+                    ...makeMidi({howToPlay, swapChannel})
                 };
         }
     };
