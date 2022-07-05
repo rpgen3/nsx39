@@ -48,7 +48,7 @@ export const nsx39 = new class {
         });
     }
     setLyric({data: {lyric}, timestamp}) {
-        if (lyric in this.nsx39TextMap) {
+        if (lyric in nsx39TextMap) {
             const lyricId = nsx39TextMap[lyric];
             this.sendSysEx({
                 data: [0x0A, 0x00, lyricId],
