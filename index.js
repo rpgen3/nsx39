@@ -27,16 +27,14 @@
             'MidiNote',
             'MidiNoteMessage',
             'MidiProgramChangeMessage',
-            'MidiTempoMessage',
-            'sec2delta'
+            'MidiTempoMessage'
         ].map(v => `https://rpgen3.github.io/piano/mjs/midi/${v}.mjs`),
         [
-            'ArrayAdvancer',
             'UstEvent',
             'UstNote',
             'UstNoteMessage',
             'UstTempoMessage',
-            'nsx39'
+            'Timeline'
         ].map(v => `https://rpgen3.github.io/nsx39/mjs/${v}.mjs`)
     ].flat());
     Promise.all([
@@ -72,7 +70,7 @@
         viewStatus('未接続');
         rpgen3.addBtn(html, 'NSX-39に接続', async () => {
             try {
-                await rpgen4.nsx39.requestMIDIAccess();
+                await rpgen4.Timeline.nsx39.requestMIDIAccess();
                 viewStatus('接続成功');
             } catch (err) {
                 console.error(err);
@@ -80,15 +78,15 @@
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '「ら」を設定', async () => {
-            rpgen4.nsx39.setLyric({data: {lyric: 'ら'}});
+            rpgen4.Timeline.nsx39.setLyric({data: {lyric: 'ら'}});
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
-            rpgen4.nsx39.noteOn({
+            rpgen4.Timeline.nsx39.noteOn({
                 data: {channel: 0, pitch: 0x48, velocity: 100}
             });
-            rpgen4.nsx39.noteOn({
+            rpgen4.Timeline.nsx39.noteOn({
                 data: {channel: 0, pitch: 0x48, velocity: 0},
-                timestamp: 1000
+                timestamp: performance.now() + 500
             });
         }).addClass('btn');
     }
@@ -148,63 +146,17 @@
             ]
         });
         $('<dd>').appendTo(html);
-        class Timeline {
-            static id = -1;
-            constructor({ustNotes, midiNotes, tempos, programChanges}) {
-                this.ustNotes = this.factory(ustNotes);
-                this.midiNotes = this.factory(midiNotes);
-                this.tempos = this.factory(tempos);
-                this.programChanges = this.factory(programChanges);
-                this.bpm = 0;
-                this.planTime = 0.5;
-            }
-            factory(nullableArray) {
-                return new rpgen4.ArrayAdvancer(Array.isArray(nullableArray) ? nullableArray : []);
-            }
-            init() {
-                this.ustNotes.done = false;
-                this.midiNotes.done = false;
-                this.tempos.done = false;
-                this.programChanges.done = false;
-            }
-            sec2delta(sec) {
-                return rpgen4.sec2delta({
-                    sec,
-                    bpm: this.bpm
-                });
-            }
-            delta2sec(delta) {
-                return rpgen4.delta2sec({
-                    delta,
-                    bpm: this.bpm
-                });
-            }
-            update() {
-                const now = performance.now();
-                const deltaNow = this.sec2delta(sec / 1000);
-                while (!this.ustNotes.done) {
-                    const {when, tempo} = this.ustNotes.head;
-                    this.ustNotes.advance();
-                }
-            }
-            play() {
-                this.stop();
-                this.init();
-                this.constructor.id = setTimeout(() => {
-                    this.constructor.id = setInterval(() => this.update());
-                }, 500);
-            }
-            stop() {
-                clearInterval(this.constructor.id);
-                rpgen4.nsx39.allSoundOff();
-            }
-        }
         let g_timeline = null;
         rpgen3.addBtn(html, '演奏データの作成', () => {
-            g_timeline = new Timeline(makeMessageArrays({
-                howToPlay: howToPlay(),
-                swapChannel: swapChannel()
-            }));
+            try {
+                g_timeline = new rpgen4.Timeline(makeMessageArrays({
+                    howToPlay: howToPlay(),
+                    swapChannel: swapChannel()
+                }));
+            } catch (err) {
+                console.error(err);
+                alert(err);
+            }
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏中止', () => {
             g_timeline.stop();
@@ -226,7 +178,7 @@
         return {
             midiNotes: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
             tempos: rpgen4.MidiTempoMessage.makeArray(g_midi),
-            programChanges: MidiProgramChangeMessage.makeArray(g_midi)
+            programChanges: rpgen4.MidiProgramChangeMessage.makeArray(g_midi)
         };
     };
     const makeMessageArrays = ({
@@ -249,11 +201,11 @@
                     ...ust,
                     ...midi,
                     midiNotes: midi.midiNotes
-                        .filter(({channel}) => channel !== (swapChannel || 0))
-                        .map(v => {
-                            if (v.channel === 0) v.channel = swapChannel;
-                            return v;
-                        })
+                    .filter(({channel}) => channel !== (swapChannel || 0))
+                    .map(v => {
+                        if (v.channel === 0) v.channel = swapChannel;
+                        return v;
+                    })
                 };
             }
         }
