@@ -1,7 +1,7 @@
 import {MidiNoteMessage} from 'https://rpgen3.github.io/piano/mjs/midi/MidiNoteMessage.mjs';
 export class UstNoteMessage extends MidiNoteMessage {
     constructor({when, channel, pitch, velocity, lyric}) {
-        this.super({when, channel, pitch, velocity});
+        super({when, channel, pitch, velocity});
         this.lyric = lyric;
     }
     static makeArray(ustNoteArray) {
