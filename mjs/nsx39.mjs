@@ -37,7 +37,7 @@ export const nsx39 = new class {
     allSoundOff({timestamp}) {
         for (let i = 0; i < 0x10; i++) {
             this.soundOff({
-                data: {ch: i},
+                data: {channel: i},
                 timestamp
             });
         }
