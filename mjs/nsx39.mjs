@@ -16,21 +16,21 @@ export const nsx39 = new class {
     send({data, timestamp}) {
         this.midiOutput.send(data, timestamp);
     }
-    noteOn({data: {ch, pitch, velocity}, timestamp}) {
+    noteOn({data: {channel, pitch, velocity}, timestamp}) {
         this.send({
-            data: [0x90 | ch, pitch, velocity],
+            data: [0x90 | channel, pitch, velocity],
             timestamp
         });
     }
-    programChange({data: {ch, programChange}, timestamp}) {
+    programChange({data: {channel, programChange}, timestamp}) {
         this.send({
-            data: [0xC0 | ch, programChange],
+            data: [0xC0 | channel, programChange],
             timestamp
         });
     }
-    soundOff({data: {ch}, timestamp}) {
+    soundOff({data: {channel}, timestamp}) {
         this.send({
-            data: [0xB0 | ch, 0x78, 0x00],
+            data: [0xB0 | channel, 0x78, 0x00],
             timestamp
         });
     }
