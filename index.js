@@ -147,16 +147,20 @@
             ]
         });
         $('<dd>').appendTo(html);
+        class Timeline {
+            constructor({ustNotes, midiNotes, tempos, programChanges}) {
+                this.ustNotes = ustNotes;
+                this.midiNotes = midiNotes;
+                this.tempos = tempos;
+                this.programChanges = programChanges;
+            }
+        }
+        let g_timeline = null;
         rpgen3.addBtn(html, '演奏データの作成', () => {
-            const {
-                ustNoteArray,
-                midiNoteArray,
-                tempoArray,
-                programChangeArray
-            } = makeMessageArrays({
+            g_timeline = new Timeline(makeMessageArrays({
                 howToPlay: howToPlay(),
                 swapChannel: swapChannel()
-            });
+            }));
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏中止', () => {
             stopTimeline();
@@ -169,16 +173,16 @@
         const ustEventArray = rpgen4.UstEvent.makeArray(g_ust);
         const ustNoteArray = rpgen4.UstNote.makeArray(ustEventArray);
         return {
-            ustNoteArray: rpgen4.UstNoteMessage.makeArray(ustNoteArray),
-            tempoArray: rpgen4.UstTempoMessage.makeArray(ustEventArray)
+            ustNotes: rpgen4.UstNoteMessage.makeArray(ustNoteArray),
+            tempos: rpgen4.UstTempoMessage.makeArray(ustEventArray)
         };
     };
     const makeMidi = () => {
         const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi);
         return {
-            midiNoteArray: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
-            tempoArray: rpgen4.MidiTempoMessage.makeArray(g_midi),
-            programChangeArray: MidiProgramChangeMessage.makeArray(g_midi)
+            midiNotes: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
+            tempos: rpgen4.MidiTempoMessage.makeArray(g_midi),
+            programChanges: MidiProgramChangeMessage.makeArray(g_midi)
         };
     };
     const makeMessageArrays = ({
@@ -200,7 +204,7 @@
                 return {
                     ...ust,
                     ...midi,
-                    midiNoteArray: midi.midiNoteArray
+                    midiNotes: midi.midiNotes
                         .filter(({channel}) => channel !== (swapChannel || 0))
                         .map(v => {
                             if (v.channel === 0) v.channel = swapChannel;
