@@ -8,9 +8,9 @@ export class Timeline {
     static id = -1;
     static prepTime = 500;
     constructor({ustNotes, midiNotes, tempos, programChanges}) {
-        this.ustNotes = this.factory(ustNotes);
-        this.midiNotes = this.factory(midiNotes);
-        this.programChanges = this.factory(programChanges);
+        this.ustNotes = this.#factory(ustNotes);
+        this.midiNotes = this.#factory(midiNotes);
+        this.programChanges = this.#factory(programChanges);
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         let startDeltaTime = 0;
         let startMilliSecond = 0;
@@ -36,16 +36,16 @@ export class Timeline {
         this.startedTime = 0;
         this.isStopping = false;
     }
-    factory(array) {
+    #factory(array) {
         return new ArrayAdvancer(Array.isArray(array) ? tuning39(array) : []);
     }
-    init() {
+    #init() {
         this.ustNotes.done = false;
         this.midiNotes.done = false;
         this.programChanges.done = false;
         this.startedTime = performance.now();
     }
-    update() {
+    #update() {
         const now = performance.now();
         const when = now - this.startedTime + this.constructor.prepTime;
         while (!this.programChanges.done && this.programChanges.head.when < when) {
@@ -71,8 +71,8 @@ export class Timeline {
     async play() {
         if (this.isStopping) return;
         await this.stop();
-        this.init();
-        this.constructor.id = setInterval(() => this.update());
+        this.#init();
+        this.constructor.id = setInterval(() => this.#update());
     }
     async stop() {
         if (this.isStopping) return;
