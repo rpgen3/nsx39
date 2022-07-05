@@ -31,6 +31,7 @@
             'sec2delta'
         ].map(v => `https://rpgen3.github.io/piano/mjs/midi/${v}.mjs`),
         [
+            'ArrayAdvancer',
             'UstEvent',
             'UstNote',
             'UstNoteMessage',
@@ -148,11 +149,54 @@
         });
         $('<dd>').appendTo(html);
         class Timeline {
+            static id = -1;
             constructor({ustNotes, midiNotes, tempos, programChanges}) {
-                this.ustNotes = ustNotes;
-                this.midiNotes = midiNotes;
-                this.tempos = tempos;
-                this.programChanges = programChanges;
+                this.ustNotes = this.factory(ustNotes);
+                this.midiNotes = this.factory(midiNotes);
+                this.tempos = this.factory(tempos);
+                this.programChanges = this.factory(programChanges);
+                this.bpm = 0;
+                this.planTime = 0.5;
+            }
+            factory(nullableArray) {
+                return new rpgen4.ArrayAdvancer(Array.isArray(nullableArray) ? nullableArray : []);
+            }
+            init() {
+                this.ustNotes.done = false;
+                this.midiNotes.done = false;
+                this.tempos.done = false;
+                this.programChanges.done = false;
+            }
+            sec2delta(sec) {
+                return rpgen4.sec2delta({
+                    sec,
+                    bpm: this.bpm
+                });
+            }
+            delta2sec(delta) {
+                return rpgen4.delta2sec({
+                    delta,
+                    bpm: this.bpm
+                });
+            }
+            update() {
+                const now = performance.now();
+                const deltaNow = this.sec2delta(sec / 1000);
+                while (!this.ustNotes.done) {
+                    const {when, tempo} = this.ustNotes.head;
+                    this.ustNotes.advance();
+                }
+            }
+            play() {
+                this.stop();
+                this.init();
+                this.constructor.id = setTimeout(() => {
+                    this.constructor.id = setInterval(() => this.update());
+                }, 500);
+            }
+            stop() {
+                clearInterval(this.constructor.id);
+                rpgen4.nsx39.allSoundOff();
             }
         }
         let g_timeline = null;
@@ -163,10 +207,10 @@
             }));
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏中止', () => {
-            stopTimeline();
+            g_timeline.stop();
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏開始', () => {
-            playTimeline();
+            g_timeline.play();
         }).addClass('btn');
     }
     const makeUst = () => {
@@ -213,10 +257,5 @@
                 };
             }
         }
-    };
-    const stopTimeline = () => {
-        rpgen4.nsx39.allSoundOff();
-    };
-    const playTimeline = () => {
     };
 })();
