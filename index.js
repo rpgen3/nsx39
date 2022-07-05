@@ -185,29 +185,29 @@
         howToPlay,
         swapChannel
     }) => {
+        const swap = midiNotes => midiNotes.filter(({channel}) => channel !== (swapChannel || 0)).map(v => {
+            if (v.channel === 0) v.channel = swapChannel;
+            return v;
+        });
+        const swapMidi = midi => ({
+            ...midi,
+            midiNotes: swap(midi.midiNotes),
+            programChanges: swap(midi.programChanges)
+        });
         switch (howToPlay) {
             case playing_ust:
                 if (g_ust === null) throw 'Must input UST file.';
                 return makeUst();
             case playing_midi:
                 if (g_midi === null) throw 'Must input MIDI file.';
-                return makeMidi();
-            case playing_both: {
+                return swapMidi(makeMidi());
+            case playing_both:
                 if (g_ust === null) throw 'Must input UST file.';
                 if (g_midi === null) throw 'Must input MIDI file.';
-                const ust = makeUst();
-                const midi = makeMidi();
                 return {
-                    ...ust,
-                    ...midi,
-                    midiNotes: midi.midiNotes
-                    .filter(({channel}) => channel !== (swapChannel || 0))
-                    .map(v => {
-                        if (v.channel === 0) v.channel = swapChannel;
-                        return v;
-                    })
+                    ...makeUst(),
+                    ...swapMidi(makeMidi())
                 };
-            }
         }
     };
 })();
