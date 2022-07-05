@@ -10,7 +10,7 @@ export class Timeline {
         this.ustNotes = this.factory(ustNotes);
         this.midiNotes = this.factory(midiNotes);
         this.programChanges = this.factory(programChanges);
-        const shiftedTempos = tempos.slice(1).concat(UstTempoMessage({when: Infinity}));
+        const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         let startDeltaTime = 0;
         let startMilliSecond = 0;
         const toMilliSecond = (bpm, when) => delta2sec({
