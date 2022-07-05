@@ -1,10 +1,10 @@
 import {MidiNote} from 'https://rpgen3.github.io/piano/mjs/midi/MidiNote.mjs';
 export class UstNote extends MidiNote {
-    constructor({start, end, ch, pitch, velocity, lyric}) {
-        super({start, end, ch, pitch, velocity});
+    constructor({start, end, channel, pitch, velocity, lyric}) {
+        super({start, end, channel, pitch, velocity});
         this.lyric = lyric;
     }
-    static makeArray(ustEventArray, ch = 0) {
+    static makeArray(ustEventArray, channel = 0) {
         const result = [];
         let currentTime = 0;
         for (const {length, noteNum, lyric, intensity} of ustEventArray) {
@@ -17,7 +17,7 @@ export class UstNote extends MidiNote {
                 result.push(new this({
                     start: currentTime,
                     end,
-                    ch,
+                    channel,
                     pitch: noteNum,
                     velocity: intensity,
                     lyric
