@@ -33,8 +33,8 @@ export class Timeline {
             startMilliSecond += toMilliSecond(bpm, when);
             startDeltaTime = when;
         }
-        this.startTime = 0;
-        this.stopping = false;
+        this.startedTime = 0;
+        this.isStopping = false;
     }
     factory(array) {
         return new ArrayAdvancer(Array.isArray(array) ? tuning39(array) : []);
@@ -43,46 +43,46 @@ export class Timeline {
         this.ustNotes.done = false;
         this.midiNotes.done = false;
         this.programChanges.done = false;
-        this.startTime = performance.now();
+        this.startedTime = performance.now();
     }
     update() {
         const now = performance.now();
-        const when = now - this.startTime + this.constructor.prepTime;
+        const when = now - this.startedTime + this.constructor.prepTime;
         while (!this.programChanges.done && this.programChanges.head.when < when) {
             const data = this.programChanges.head;
-            const timestamp = this.startTime + this.programChanges.head.when
+            const timestamp = this.startedTime + this.programChanges.head.when
             nsx39.programChange({data, timestamp});
             this.programChanges.advance();
         }
         while (!this.ustNotes.done && this.ustNotes.head.when < when) {
             const data = this.ustNotes.head;
-            const timestamp = this.startTime + this.ustNotes.head.when;
+            const timestamp = this.startedTime + this.ustNotes.head.when;
             nsx39.setLyric({data, timestamp});
             nsx39.noteOn({data, timestamp});
             this.ustNotes.advance();
         }
         while (!this.midiNotes.done && this.midiNotes.head.when < when) {
             const data = this.midiNotes.head;
-            const timestamp = this.startTime + this.midiNotes.head.when;
+            const timestamp = this.startedTime + this.midiNotes.head.when;
             nsx39.noteOn({data, timestamp});
             this.midiNotes.advance();
         }
     }
     async play() {
-        if (this.stopping) return;
+        if (this.isStopping) return;
         await this.stop();
         this.init();
         this.constructor.id = setInterval(() => this.update());
     }
     async stop() {
-        if (this.stopping) return;
-        this.stopping = true;
+        if (this.isStopping) return;
+        this.isStopping = true;
         clearInterval(this.constructor.id);
         return new Promise(resolve => {
             const id = setInterval(() => nsx39.allSoundOff());
             setTimeout(() => {
                 clearInterval(id);
-                this.stopping = false;
+                this.isStopping = false;
                 resolve();
             }, this.constructor.prepTime);
         });
