@@ -26,6 +26,7 @@
         [
             'MidiNote',
             'MidiNoteMessage',
+            'MidiProgramChangeMessage',
             'MidiTempoMessage',
             'sec2delta'
         ].map(v => `https://rpgen3.github.io/piano/mjs/midi/${v}.mjs`),
@@ -147,7 +148,12 @@
         });
         $('<dd>').appendTo(html);
         rpgen3.addBtn(html, '演奏データの作成', () => {
-            const {noteMessageArray, tempos} = makeTimelineMaterial({
+            const {
+                ustNoteArray,
+                midiNoteArray,
+                tempoArray,
+                programChangeArray
+            } = makeMessageArrays({
                 howToPlay: howToPlay(),
                 swapChannel: swapChannel()
             });
@@ -163,23 +169,19 @@
         const ustEventArray = rpgen4.UstEvent.makeArray(g_ust);
         const ustNoteArray = rpgen4.UstNote.makeArray(ustEventArray);
         return {
-            noteMessageArray: rpgen4.UstNoteMessage.makeArray(ustNoteArray),
-            tempos: rpgen4.UstTempoMessage.makeArray(ustEventArray)
+            ustNoteArray: rpgen4.UstNoteMessage.makeArray(ustNoteArray),
+            tempoArray: rpgen4.UstTempoMessage.makeArray(ustEventArray)
         };
     };
     const makeMidi = () => {
         const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi);
         return {
-            noteMessageArray: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
-            tempos: rpgen4.MidiTempoMessage.makeArray(g_midi)
+            midiNoteArray: rpgen4.MidiNoteMessage.makeArray(midiNoteArray),
+            tempoArray: rpgen4.MidiTempoMessage.makeArray(g_midi),
+            programChangeArray: MidiProgramChangeMessage.makeArray(g_midi)
         };
     };
-    const mergeNoteMessageArrays = noteMessageArrays => {
-        const heap = new rpgen4.Heap();
-        for (const noteMessageArray of noteMessageArrays) for(const noteMessage of noteMessageArray) heap.add(noteMessage.when, noteMessage);
-        return rpgen4.MidiNoteMessage.fixArray([...heap]);
-    };
-    const makeTimelineMaterial = ({
+    const makeMessageArrays = ({
         howToPlay,
         swapChannel
     }) => {
@@ -196,14 +198,14 @@
                 const ust = makeUst();
                 const midi = makeMidi();
                 return {
-                    noteMessageArray: mergeNoteMessageArrays([
-                        ust.noteMessageArray,
-                        midi.noteMessageArray.filter(({channel}) => channel !== (swapChannel || 0)).map(v => {
+                    ...ust,
+                    ...midi,
+                    midiNoteArray: midi.midiNoteArray
+                        .filter(({channel}) => channel !== (swapChannel || 0))
+                        .map(v => {
                             if (v.channel === 0) v.channel = swapChannel;
                             return v;
                         })
-                    ]),
-                    tempos: midi.tempos
                 };
             }
         }
