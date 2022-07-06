@@ -48,7 +48,9 @@ export const nsx39Scheduler = new class {
         this.midiNotes.done = false;
         if (!this.ustNotes.done) {
             nsx39.setLyric({
-                data: this._ustNotes.filter(({velocity}) => velocity !== 0).map(({lyric}) => lyric)
+                data: {
+                    lyric: this._ustNotes.filter(({velocity}) => velocity !== 0).map(({lyric}) => lyric)
+                }
             });
         }
         this.startedTime = performance.now();
