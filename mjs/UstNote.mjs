@@ -4,6 +4,7 @@ export class UstNote extends MidiNote {
         super({start, end, channel, pitch, velocity});
         this.lyric = lyric;
     }
+    static restLyric = 'R';
     static makeArray(ustEventArray, channel = 0) {
         const result = [];
         let currentTime = 0;
@@ -12,6 +13,7 @@ export class UstNote extends MidiNote {
             if (
                 noteNum !== null &&
                 lyric !== null &&
+                lyric !== this.constructor.restLyric &&
                 intensity !== null
             ) {
                 result.push(new this({
