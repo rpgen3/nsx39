@@ -50,7 +50,7 @@ export const nsx39 = new class {
     setLyric({data: {lyric}, timestamp}) {
         const payload = [];
         for (const phoneme of lyric) {
-            payload.push(nsx39TextMap[phoneme] || 0x7c); // 0x7c, 0x7d, 0x7e, 0x7f
+            payload.push(nsx39TextMap[phoneme] || 0x7d);
         }
         this.sendSysEx({
             data: [0x0A, 0x00].concat(payload),
