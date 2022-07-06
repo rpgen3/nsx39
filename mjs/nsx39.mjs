@@ -43,17 +43,18 @@ export const nsx39 = new class {
     }
     sendSysEx({data, timestamp}) {
         this.send({
-            data: [0xF0, 0x43, 0x79, 0x09, 0x11, ...data, 0xF7],
+            data: [0xF0, 0x43, 0x79, 0x09, 0x11].concat(data).concat(0xF7),
             timestamp
         });
     }
-    setLyric({data: {lyric}, timestamp}) {
-        if (lyric in nsx39TextMap) {
-            const lyricId = nsx39TextMap[lyric];
-            this.sendSysEx({
-                data: [0x0A, 0x00, lyricId],
-                timestamp
-            });
+    setLyric({data: lyric, timestamp}) {
+        const payload = [];
+        for (const phoneme of lyric) {
+            payload.push(nsx39TextMap[phoneme] || 0x7c); // 0x7c, 0x7d, 0x7e, 0x7f
         }
+        this.sendSysEx({
+            data: [0x0A, 0x00].concat(payload),
+            timestamp
+        });
     }
 }();
