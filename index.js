@@ -173,11 +173,22 @@
         };
     };
     const makeMidi = ({howToPlay, swapChannel}) => {
-        const mutedChannel = howToPlay === playing_both ? swapChannel : null;
-        const swap = messages => messages.filter(({channel}) => channel !== mutedChannel).map(v => {
-            if (swapChannel !== null && v.channel === 0) v.channel = swapChannel;
-            return v;
-        });
+        const swap = messages => {
+            if (howToPlay === playing_midi) {
+                if (swapChannel === null) return messages;
+                for (const v of messages) {
+                    if (v.channel === 0) v.channel = swapChannel;
+                    else if (v.channel === swapChannel) v.channel = 0;
+                }
+                return messages;
+            } else {
+                if (swapChannel === null) return messages.filter(({channel}) => channel !== 0);
+                return messages.filter(({channel}) => channel !== swapChannel).map(v => {
+                    if (v.channel === 0) v.channel = swapChannel;
+                    return v;
+                });
+            }
+        };
         const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi);
         return {
             midiNotes: swap(rpgen4.MidiNoteMessage.makeArray(midiNoteArray)),
