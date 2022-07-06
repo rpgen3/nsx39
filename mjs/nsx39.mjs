@@ -47,7 +47,7 @@ export const nsx39 = new class {
             timestamp
         });
     }
-    setLyric({data: lyric, timestamp}) {
+    setLyric({data: {lyric}, timestamp}) {
         const payload = [];
         for (const phoneme of lyric) {
             payload.push(nsx39TextMap[phoneme] || 0x7c); // 0x7c, 0x7d, 0x7e, 0x7f
