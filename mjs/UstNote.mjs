@@ -13,7 +13,7 @@ export class UstNote extends MidiNote {
             if (
                 noteNum !== null &&
                 lyric !== null &&
-                lyric !== this.constructor.restLyric &&
+                lyric !== this.restLyric &&
                 intensity !== null
             ) {
                 result.push(new this({
