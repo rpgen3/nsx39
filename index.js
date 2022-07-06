@@ -121,6 +121,25 @@
             g_midi = v;
         });
     }
+    {
+        const {html} = addHideArea('tuning NSX-39');
+        const inputEarlyLyricTime = rpgen3.addSelect(html, {
+            label: '事前歌詞入力[ミリ秒]',
+            save: true,
+            list: [...Array(10).keys()].map(v => v * 10)
+        });
+        inputEarlyLyricTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.earlyLyricTime = inputEarlyLyricTime();
+        }).trigger('change');
+        const inputEarly39DeltaTime = rpgen3.addSelect(html, {
+            label: '先行して歌わせる[デルタ時間]',
+            save: true,
+            list: [...Array(10).keys()].map(v => v * 10)
+        });
+        inputEarly39DeltaTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.early39DeltaTime = inputEarly39DeltaTime();
+        }).trigger('change');
+    }
     const playing_ust = 0;
     const playing_midi = 1;
     const playing_both = 2;
