@@ -78,7 +78,7 @@
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '「ら」を設定', async () => {
-            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'ら'}});
+            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: ['ら']}});
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
             rpgen4.nsx39Scheduler.nsx39.noteOn({
