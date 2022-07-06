@@ -173,7 +173,7 @@
         };
     };
     const makeMidi = ({howToPlay, swapChannel}) => {
-        const mutedChannel = swapChannel || (howToPlay === playing_both ? 0 : null);
+        const mutedChannel = howToPlay === playing_both ? swapChannel : null;
         const swap = messages => messages.filter(({channel}) => channel !== mutedChannel).map(v => {
             if (swapChannel !== null && v.channel === 0) v.channel = swapChannel;
             return v;
