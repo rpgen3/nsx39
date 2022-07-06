@@ -13,10 +13,10 @@ export const nsx39Scheduler = new class {
     }
     load({tempos, programChanges, ustNotes, midiNotes}) {
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
-        this.programChanges = this.#factory(programChanges);
-        this.ustNotes = this.#factory(ustNotes);
+        this.programChanges = new ArrayAdvancer(programChanges || []);
+        this.ustNotes = new ArrayAdvancer(tuning39(ustNotes || []));
         this._ustNotes = ustNotes;
-        this.midiNotes = this.#factory(midiNotes);
+        this.midiNotes = new ArrayAdvancer(tuning39(midiNotes || []));
         let startDeltaTime = 0;
         let startMilliSecond = 0;
         const toMilliSecond = (bpm, when) => delta2sec({
@@ -38,9 +38,6 @@ export const nsx39Scheduler = new class {
             startMilliSecond += toMilliSecond(bpm, when);
             startDeltaTime = when;
         }
-    }
-    #factory(array) {
-        return new ArrayAdvancer(Array.isArray(array) ? tuning39(array) : []);
     }
     #init() {
         this.programChanges.done = false;
