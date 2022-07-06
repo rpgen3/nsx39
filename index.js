@@ -34,7 +34,7 @@
             'UstNote',
             'UstNoteMessage',
             'UstTempoMessage',
-            'Timeline'
+            'nsx39Scheduler'
         ].map(v => `https://rpgen3.github.io/nsx39/mjs/${v}.mjs`)
     ].flat());
     Promise.all([
@@ -70,7 +70,7 @@
         viewStatus('未接続');
         rpgen3.addBtn(html, 'NSX-39に接続', async () => {
             try {
-                await rpgen4.Timeline.nsx39.requestMIDIAccess();
+                await rpgen4.nsx39Scheduler.nsx39.requestMIDIAccess();
                 viewStatus('接続成功');
             } catch (err) {
                 console.error(err);
@@ -78,13 +78,13 @@
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '「ら」を設定', async () => {
-            rpgen4.Timeline.nsx39.setLyric({data: {lyric: 'ら'}});
+            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'ら'}});
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
-            rpgen4.Timeline.nsx39.noteOn({
+            rpgen4.nsx39Scheduler.nsx39.noteOn({
                 data: {channel: 0, pitch: 0x48, velocity: 100}
             });
-            rpgen4.Timeline.nsx39.noteOn({
+            rpgen4.nsx39Scheduler.nsx39.noteOn({
                 data: {channel: 0, pitch: 0x48, velocity: 0},
                 timestamp: performance.now() + 500
             });
@@ -146,10 +146,9 @@
             ]
         });
         $('<dd>').appendTo(html);
-        let g_timeline = null;
         rpgen3.addBtn(html, '演奏データの作成', () => {
             try {
-                g_timeline = new rpgen4.Timeline(makeMessageArrays({
+                rpgen4.nsx39Scheduler.load(makeMessageArrays({
                     howToPlay: howToPlay(),
                     swapChannel: swapChannel()
                 }));
@@ -159,10 +158,10 @@
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏中止', () => {
-            g_timeline.stop();
+            rpgen4.nsx39Scheduler.stop();
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏開始', () => {
-            g_timeline.play();
+            rpgen4.nsx39Scheduler.play();
         }).addClass('btn');
     }
     const makeUst = () => {
