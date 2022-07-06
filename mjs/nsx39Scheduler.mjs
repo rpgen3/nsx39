@@ -15,6 +15,7 @@ export const nsx39Scheduler = new class {
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         this.programChanges = this.#factory(programChanges);
         this.ustNotes = this.#factory(ustNotes);
+        this._ustNotes = ustNotes;
         this.midiNotes = this.#factory(midiNotes);
         let startDeltaTime = 0;
         let startMilliSecond = 0;
@@ -45,6 +46,11 @@ export const nsx39Scheduler = new class {
         this.programChanges.done = false;
         this.ustNotes.done = false;
         this.midiNotes.done = false;
+        if (!this.ustNotes.done) {
+            nsx39.setLyric({
+                data: this._ustNotes.filter(({velocity}) => velocity !== 0).map(({lyric}) => lyric)
+            });
+        }
         this.startedTime = performance.now();
     }
     #update() {
@@ -59,7 +65,6 @@ export const nsx39Scheduler = new class {
         while (!this.ustNotes.done && this.ustNotes.head.when < when) {
             const data = this.ustNotes.head;
             const timestamp = this.startedTime + this.ustNotes.head.when;
-            nsx39.setLyric({data, timestamp});
             nsx39.noteOn({data, timestamp});
             this.ustNotes.advance();
         }
