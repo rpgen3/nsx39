@@ -10,14 +10,14 @@ export const nsx39Scheduler = new class {
         this.id = -1;
         this.startedTime = 0;
         this.prepTime = 500;
-        this.early39Time = 50;
+        this.early39DeltaTime = 30;
         this.earlyLyricTime = 10;
     }
     load({tempos, programChanges, ustNotes, midiNotes}) {
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         this.programChanges = new ArrayAdvancer(programChanges || []);
-        this.ustNotes = new ArrayAdvancer(tuning39(ustNotes || [], this.early39Time));
-        this.midiNotes = new ArrayAdvancer(tuning39(midiNotes || [], this.early39Time));
+        this.ustNotes = new ArrayAdvancer(tuning39(ustNotes || [], this.early39DeltaTime));
+        this.midiNotes = new ArrayAdvancer(tuning39(midiNotes || [], this.early39DeltaTime));
         let startDeltaTime = 0;
         let startMilliSecond = 0;
         const toMilliSecond = (bpm, when) => delta2sec({
