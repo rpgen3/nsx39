@@ -3,15 +3,19 @@ import {ArrayAdvancer} from 'https://rpgen3.github.io/nsx39/mjs/ArrayAdvancer.mj
 import {UstTempoMessage} from 'https://rpgen3.github.io/nsx39/mjs/UstTempoMessage.mjs';
 import {nsx39} from 'https://rpgen3.github.io/nsx39/mjs/nsx39.mjs';
 import {tuning39} from 'https://rpgen3.github.io/nsx39/mjs/tuning39.mjs';
-export class Timeline {
-    static nsx39 = nsx39;
-    static id = -1;
-    static prepTime = 500;
-    constructor({ustNotes, midiNotes, tempos, programChanges}) {
+export const nsx39Scheduler = new class {
+    constructor() {
+        this.nsx39 = nsx39;
+        this.isStopping = false;
+        this.id = -1;
+        this.startedTime = 0;
+        this.prepTime = 500;
+    }
+    load({tempos, programChanges, ustNotes, midiNotes}) {
+        const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
+        this.programChanges = this.#factory(programChanges);
         this.ustNotes = this.#factory(ustNotes);
         this.midiNotes = this.#factory(midiNotes);
-        this.programChanges = this.#factory(programChanges);
-        const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         let startDeltaTime = 0;
         let startMilliSecond = 0;
         const toMilliSecond = (bpm, when) => delta2sec({
@@ -21,9 +25,9 @@ export class Timeline {
         for (const [i, {bpm}] of tempos.entries()) {
             const {when} = shiftedTempos[i];
             for (const v of [
+                this.programChanges,
                 this.ustNotes,
-                this.midiNotes,
-                this.programChanges
+                this.midiNotes
             ]) {
                 while(!v.done && v.head.when < when) {
                     v.head.when = toMilliSecond(bpm, v.head.when) + startMilliSecond;
@@ -33,21 +37,19 @@ export class Timeline {
             startMilliSecond += toMilliSecond(bpm, when);
             startDeltaTime = when;
         }
-        this.startedTime = 0;
-        this.isStopping = false;
     }
     #factory(array) {
         return new ArrayAdvancer(Array.isArray(array) ? tuning39(array) : []);
     }
     #init() {
+        this.programChanges.done = false;
         this.ustNotes.done = false;
         this.midiNotes.done = false;
-        this.programChanges.done = false;
         this.startedTime = performance.now();
     }
     #update() {
         const now = performance.now();
-        const when = now - this.startedTime + this.constructor.prepTime;
+        const when = now - this.startedTime + this.prepTime;
         while (!this.programChanges.done && this.programChanges.head.when < when) {
             const data = this.programChanges.head;
             const timestamp = this.startedTime + this.programChanges.head.when
@@ -72,19 +74,19 @@ export class Timeline {
         if (this.isStopping) return;
         await this.stop();
         this.#init();
-        this.constructor.id = setInterval(() => this.#update());
+        this.id = setInterval(() => this.#update());
     }
     async stop() {
         if (this.isStopping) return;
         this.isStopping = true;
-        clearInterval(this.constructor.id);
+        clearInterval(this.id);
         return new Promise(resolve => {
             const id = setInterval(() => nsx39.allSoundOff());
             setTimeout(() => {
                 clearInterval(id);
                 this.isStopping = false;
                 resolve();
-            }, this.constructor.prepTime);
+            }, this.prepTime);
         });
     }
-}
+}();
