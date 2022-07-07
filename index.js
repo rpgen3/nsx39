@@ -78,7 +78,7 @@
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '歌詞「ら」を設定', async () => {
-            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: ['ら']}});
+            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'ら'}});
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
             rpgen4.nsx39Scheduler.nsx39.noteOn({
@@ -126,7 +126,7 @@
         const inputEarlyLyricTime = rpgen3.addSelect(html, {
             label: '事前歌詞入力[ミリ秒]',
             save: true,
-            list: [...Array(10).keys()].map(v => v * 10)
+            list: [...Array(20).keys()].map(v => v * 25)
         });
         inputEarlyLyricTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.earlyLyricTime = inputEarlyLyricTime();
@@ -134,7 +134,7 @@
         const inputEarly39DeltaTime = rpgen3.addSelect(html, {
             label: '先行して歌わせる[デルタ時間]',
             save: true,
-            list: [...Array(10).keys()].map(v => v * 10)
+            list: [...Array(20).keys()].map(v => v * 25)
         });
         inputEarly39DeltaTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.early39DeltaTime = inputEarly39DeltaTime();
