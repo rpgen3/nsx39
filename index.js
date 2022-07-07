@@ -126,26 +126,38 @@
         const inputScheduledTime = rpgen3.addSelect(html, {
             label: 'スケジューリング[ミリ秒]',
             save: true,
-            list: [...Array(20).keys()].map(v => v * 50)
+            list: [...Array(10).keys()].map(v => v * 100),
+            value: 100
         });
         inputScheduledTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.scheduledTime = inputScheduledTime();
         }).trigger('change');
-        const inputEarlyLyricTime = rpgen3.addSelect(html, {
+        const inputShiftedLyricTime = rpgen3.addSelect(html, {
             label: '事前歌詞入力[ミリ秒]',
             save: true,
-            list: [...Array(20).keys()].map(v => v * 25)
+            list: [...Array(10).keys()].map(v => v * 10),
+            value: 10
         });
-        inputEarlyLyricTime.elm.on('change', () => {
-            rpgen4.nsx39Scheduler.earlyLyricTime = inputEarlyLyricTime();
+        inputShiftedLyricTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.shiftedLyricTime = inputShiftedLyricTime();
         }).trigger('change');
-        const inputEarly39DeltaTime = rpgen3.addSelect(html, {
+        const inputShiftedNoteTime = rpgen3.addSelect(html, {
             label: '先行して歌わせる[デルタ時間]',
             save: true,
-            list: [...Array(20).keys()].map(v => v * 25)
+            list: [...Array(20).keys()].map(v => v * 25),
+            value: 150
         });
-        inputEarly39DeltaTime.elm.on('change', () => {
-            rpgen4.nsx39Scheduler.early39DeltaTime = inputEarly39DeltaTime();
+        inputShiftedNoteTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.shiftedNoteTime = inputShiftedNoteTime();
+        }).trigger('change');
+        const inputShiftedNoteOffTime = rpgen3.addSelect(html, {
+            label: 'ノートオフを先行させる[デルタ時間]',
+            save: true,
+            list: [...Array(10).keys()].map(v => v * 10),
+            value: 10
+        });
+        inputShiftedNoteOffTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.shiftedNoteOffTime = inputShiftedNoteOffTime();
         }).trigger('change');
     }
     const playing_ust = 0;
