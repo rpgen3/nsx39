@@ -49,7 +49,7 @@ export const nsx39 = new class {
     }
     setLyric({data: {lyric}, timestamp}) {
         this.sendSysEx({
-            data: [0x0A, 0x00, phoneme in nsx39TextMap ? nsx39TextMap[lyric] : 0x7d],
+            data: [0x0A, 0x00, lyric in nsx39TextMap ? nsx39TextMap[lyric] : 0x7d],
             timestamp
         });
     }
