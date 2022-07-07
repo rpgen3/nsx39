@@ -43,7 +43,7 @@ export const nsx39 = new class {
     }
     sendSysEx({data, timestamp}) {
         this.send({
-            data: [0xF0, 0x43, 0x79, 0x09, 0x11].concat(data).concat(0xF7),
+            data: [0xF0, 0x43, 0x79, 0x09, 0x11, ...data, 0xF7],
             timestamp
         });
     }
