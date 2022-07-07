@@ -9,7 +9,7 @@ export const nsx39Scheduler = new class {
         this.isStopping = false;
         this.id = -1;
         this.startedTime = 0;
-        this.prepTime = 500;
+        this.scheduledTime = 500;
         this.early39DeltaTime = 30;
         this.earlyLyricTime = 10;
     }
@@ -50,7 +50,7 @@ export const nsx39Scheduler = new class {
     }
     #update() {
         const now = performance.now();
-        const when = now - this.startedTime + this.prepTime;
+        const when = now - this.startedTime + this.scheduledTime;
         while (!this.programChanges.done && this.programChanges.head.when < when) {
             const data = this.programChanges.head;
             const timestamp = data.when + this.startedTime;
@@ -87,7 +87,7 @@ export const nsx39Scheduler = new class {
                 clearInterval(id);
                 this.isStopping = false;
                 resolve();
-            }, this.prepTime);
+            }, this.scheduledTime);
         });
     }
 }();
