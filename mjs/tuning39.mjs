@@ -1,5 +1,5 @@
 export const tuning39 = (messages, early39DeltaTime) => {
-    for (const v of messages) v.when -= early39DeltaTime;
+    for (const v of messages) if (v.channel === 0) v.when -= early39DeltaTime;
     const noteOn = new Set;
     for (const {when, channel, velocity} of messages) {
         if (channel === 0 && velocity !== 0) noteOn.add(when);
