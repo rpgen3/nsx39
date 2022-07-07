@@ -123,6 +123,14 @@
     }
     {
         const {html} = addHideArea('tuning NSX-39');
+        const inputScheduledTime = rpgen3.addSelect(html, {
+            label: 'スケジューリング[ミリ秒]',
+            save: true,
+            list: [...Array(20).keys()].map(v => v * 50)
+        });
+        inputScheduledTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.scheduledTime = inputScheduledTime();
+        }).trigger('change');
         const inputEarlyLyricTime = rpgen3.addSelect(html, {
             label: '事前歌詞入力[ミリ秒]',
             save: true,
