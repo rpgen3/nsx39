@@ -53,20 +53,20 @@ export const nsx39Scheduler = new class {
         const when = now - this.startedTime + this.prepTime;
         while (!this.programChanges.done && this.programChanges.head.when < when) {
             const data = this.programChanges.head;
-            const timestamp = this.startedTime + this.programChanges.head.when
+            const timestamp = data.when + this.startedTime;
             nsx39.programChange({data, timestamp});
             this.programChanges.advance();
         }
         while (!this.ustNotes.done && this.ustNotes.head.when < when) {
             const data = this.ustNotes.head;
-            const timestamp = this.startedTime + this.ustNotes.head.when;
+            const timestamp = data.when + this.startedTime;
             nsx39.setLyric({data, timestamp: timestamp - this.earlyLyricTime});
             nsx39.noteOn({data, timestamp});
             this.ustNotes.advance();
         }
         while (!this.midiNotes.done && this.midiNotes.head.when < when) {
             const data = this.midiNotes.head;
-            const timestamp = this.startedTime + this.midiNotes.head.when;
+            const timestamp = data.when + this.startedTime;
             nsx39.noteOn({data, timestamp});
             this.midiNotes.advance();
         }
