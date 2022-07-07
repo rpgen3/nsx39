@@ -82,10 +82,10 @@
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
             rpgen4.nsx39Scheduler.nsx39.noteOn({
-                data: {channel: 0, pitch: 0x48, velocity: 100}
+                data: {channel: 0, pitch: 0x45, velocity: 100}
             });
             rpgen4.nsx39Scheduler.nsx39.noteOn({
-                data: {channel: 0, pitch: 0x48, velocity: 0},
+                data: {channel: 0, pitch: 0x45, velocity: 0},
                 timestamp: performance.now() + 500
             });
         }).addClass('btn');
