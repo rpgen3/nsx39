@@ -60,10 +60,7 @@ export const nsx39Scheduler = new class {
         while (!this.ustNotes.done && this.ustNotes.head.when < when) {
             const data = this.ustNotes.head;
             const timestamp = this.startedTime + this.ustNotes.head.when;
-            nsx39.setLyric({
-                data: {lyric: [this.ustNotes.head.lyric]},
-                timestamp: timestamp - this.earlyLyricTime
-            });
+            nsx39.setLyric({data, timestamp: timestamp - this.earlyLyricTime});
             nsx39.noteOn({data, timestamp});
             this.ustNotes.advance();
         }
