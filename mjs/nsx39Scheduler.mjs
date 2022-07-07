@@ -9,15 +9,24 @@ export const nsx39Scheduler = new class {
         this.isStopping = false;
         this.id = -1;
         this.startedTime = 0;
-        this.scheduledTime = 500;
-        this.early39DeltaTime = 30;
-        this.earlyLyricTime = 10;
+        this.scheduledTime = 100;
+        this.shiftedLyricTime = 10;
+        this.shiftedNoteTime = 150;
+        this.shiftedNoteOffTime = 10;
     }
     load({tempos, programChanges, ustNotes, midiNotes}) {
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         this.programChanges = new ArrayAdvancer(programChanges || []);
-        this.ustNotes = new ArrayAdvancer(tuning39(ustNotes || [], this.early39DeltaTime));
-        this.midiNotes = new ArrayAdvancer(tuning39(midiNotes || [], this.early39DeltaTime));
+        this.ustNotes = new ArrayAdvancer(tuning39({
+            messages: ustNotes || [],
+            shiftedNoteTime: this.shiftedNoteTime,
+            shiftedNoteOffTime: this.shiftedNoteOffTime
+        }));
+        this.midiNotes = new ArrayAdvancer(tuning39({
+            messages: midiNotes || [],
+            shiftedNoteTime: this.shiftedNoteTime,
+            shiftedNoteOffTime: this.shiftedNoteOffTime
+        }));
         let startDeltaTime = 0;
         let startMilliSecond = 0;
         const toMilliSecond = (bpm, when) => delta2sec({
@@ -60,7 +69,7 @@ export const nsx39Scheduler = new class {
         while (!this.ustNotes.done && this.ustNotes.head.when < when) {
             const data = this.ustNotes.head;
             const timestamp = data.when + this.startedTime;
-            nsx39.setLyric({data, timestamp: timestamp - this.earlyLyricTime});
+            nsx39.setLyric({data, timestamp: timestamp - this.shiftedLyricTime});
             nsx39.noteOn({data, timestamp});
             this.ustNotes.advance();
         }
