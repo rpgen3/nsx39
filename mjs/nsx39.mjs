@@ -48,12 +48,8 @@ export const nsx39 = new class {
         });
     }
     setLyric({data: {lyric}, timestamp}) {
-        const payload = [];
-        for (const phoneme of lyric) {
-            payload.push(phoneme in nsx39TextMap ? nsx39TextMap[phoneme] : 0x7d);
-        }
         this.sendSysEx({
-            data: [0x0A, 0x00].concat(payload),
+            data: [0x0A, 0x00, phoneme in nsx39TextMap ? nsx39TextMap[lyric] : 0x7d],
             timestamp
         });
     }
