@@ -5,7 +5,8 @@ export const tuning39 = ({messages, shiftedNoteTime, shiftedNoteOffTime}) => {
         if (channel === 0 && velocity !== 0) noteOn.set(when, pitch);
     }
     const excluded = new Set;
-    for (const [i, {when, channel, pitch, velocity} = v] of messages.entries()) {
+    for (const [i, v] of messages.entries()) {
+        const {when, channel, pitch, velocity} = v;
         if (channel === 0 && velocity === 0 && noteOn.has(when)) {
             if (pitch === noteOn.get(when)) v.when -= shiftedNoteOffTime;
             else excluded.add(i);
