@@ -191,7 +191,6 @@
             label: '終了予定：',
             value: '未定'
         });
-        $('<dd>').appendTo(html);
         rpgen3.addBtn(html, '演奏データの作成', () => {
             try {
                 rpgen4.nsx39Scheduler.load(makeMessageArrays({
