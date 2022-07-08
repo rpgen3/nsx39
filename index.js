@@ -59,15 +59,18 @@
             }
         });
     };
+    const addLabeledText = (html, {label, value}) => {
+        const holder = $('<dd>').appendTo(html);
+        $('<span>').appendTo(holder).text(label);
+        const content = $('<span>').appendTo(holder).text(value);
+        return value => content.text(value);
+    };
     {
         const {html} = addHideArea('init');
-        const viewStatus = (() => {
-            const holder = $('<dd>').appendTo(html);
-            $('<span>').appendTo(holder).text('状態：');
-            const content = $('<span>').appendTo(holder);
-            return status => content.text(status);
-        })();
-        viewStatus('未接続');
+        const viewStatus = addLabeledText(html, {
+            label: '状態：',
+            value: '未接続'
+        });
         rpgen3.addBtn(html, 'NSX-39に接続', async () => {
             try {
                 await rpgen4.nsx39Scheduler.nsx39.requestMIDIAccess();
@@ -184,6 +187,10 @@
                 ...[2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16].map(v => [`Ch.${v}`, v - 1])
             ]
         });
+        const scheduledToEnd = addLabeledText(html, {
+            label: '終了予定：',
+            value: '未定'
+        });
         $('<dd>').appendTo(html);
         rpgen3.addBtn(html, '演奏データの作成', () => {
             try {
@@ -198,9 +205,11 @@
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏中止', () => {
             rpgen4.nsx39Scheduler.stop();
+            scheduledToEnd('中止');
         }).addClass('btn');
         rpgen3.addBtn(html, '演奏開始', () => {
             rpgen4.nsx39Scheduler.play();
+            scheduledToEnd(new Date(Date.now() + rpgen4.nsx39Scheduler.scheduledTime + rpgen4.nsx39Scheduler.duration).toTimeString());
         }).addClass('btn');
     }
     const makeUst = () => {
