@@ -9,6 +9,7 @@ export const nsx39Scheduler = new class {
         this.isStopping = false;
         this.id = -1;
         this.startedTime = 0;
+        this.duration = 0;
         this.scheduledTime = 100;
         this.shiftedLyricTime = 10;
         this.shiftedNoteTime = 150;
@@ -48,6 +49,7 @@ export const nsx39Scheduler = new class {
             startMilliSecond += toMilliSecond(bpm, when);
             startDeltaTime = when;
         }
+        this.duration = startMilliSecond;
     }
     #init() {
         this.programChanges.done = false;
