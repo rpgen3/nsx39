@@ -49,7 +49,7 @@ export const nsx39Scheduler = new class {
             startMilliSecond += toMilliSecond(bpm, when);
             startDeltaTime = when;
         }
-        this.duration = startMilliSecond;
+        this.duration = Math.max(...[ustNotes, midiNotes].filter(v => v?.length).map(v => v[v.length - 1]).map(v => v.when));
     }
     #init() {
         this.programChanges.done = false;
