@@ -91,9 +91,9 @@
         rpgen3.addBtn(html, '歌詞「あ」を設定', async () => {
             rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'あ'}});
         }).addClass('btn');
-        rpgen3.addBtn(html, '発声テスト', async () => {
+        rpgen3.addBtn(html, '発声テスト(C5)', async () => {
             rpgen4.nsx39Scheduler.nsx39.noteOn({
-                data: {channel: 0, pitch: 0x45, velocity: 100}
+                data: {channel: 0, pitch: 0x48, velocity: 100}
             });
             rpgen4.nsx39Scheduler.nsx39.noteOn({
                 data: {channel: 0, pitch: 0x45, velocity: 0},
