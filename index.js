@@ -81,7 +81,7 @@
             }
         }).addClass('btn');
         $('<dd>').appendTo(html);
-        rpgen3.addBtn(html, 'NSX-39を切断', async () => {
+        rpgen3.addBtn(html, 'close(PCフリーズ防止用)', async () => {
             await rpgen4.nsx39Scheduler.nsx39.midiOutput.close();
             viewStatus(`Closed at ${(new Date).toTimeString()}.`);
         }).addClass('btn');
