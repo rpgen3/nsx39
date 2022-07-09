@@ -173,23 +173,23 @@
         inputShiftedNoteOffTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.shiftedNoteOffTime = inputShiftedNoteOffTime();
         }).trigger('change');
-        const inputPitchCorrect = rpgen3.addSelect(html, {
-            label: 'ピッチ補正',
+        const inputPitchShift = rpgen3.addSelect(html, {
+            label: 'ピッチシフト',
             save: true,
             list: [...Array(13).keys()].map(v => v - 6),
             value: 0
         });
-        inputPitchCorrect.elm.on('change', () => {
-            rpgen4.nsx39Scheduler.pitchCorrect = inputPitchCorrect();
+        inputPitchShift.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.pitchShift = inputPitchShift();
         }).trigger('change');
-        const inputOctaveCorrect = rpgen3.addSelect(html, {
-            label: 'オクターブ補正',
+        const inputOctaveShift = rpgen3.addSelect(html, {
+            label: 'オクターブシフト',
             save: true,
             list: [...Array(9).keys()].map(v => v - 4),
             value: 0
         });
-        inputOctaveCorrect.elm.on('change', () => {
-            rpgen4.nsx39Scheduler.octaveCorrect = inputOctaveCorrect();
+        inputOctaveShift.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.octaveShift = inputOctaveShift();
         }).trigger('change');
     }
     const playing_ust = 0;
