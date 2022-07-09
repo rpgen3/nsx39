@@ -55,8 +55,6 @@ export const nsx39Scheduler = new class {
         this.programChanges.done = false;
         this.ustNotes.done = false;
         this.midiNotes.done = false;
-        if (!this.ustNotes.done) {
-        }
         this.startedTime = performance.now();
     }
     #update() {
