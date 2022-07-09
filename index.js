@@ -137,7 +137,10 @@
         const inputScheduledTime = rpgen3.addSelect(html, {
             label: 'スケジューリング[ミリ秒]',
             save: true,
-            list: [...Array(10).keys()].map(v => v * 100),
+            list: [
+                ...[...Array(10).keys()].map(v => v * 100),
+                ...[...Array(5).keys()].map(v => v * 1000)
+            ],
             value: 100
         });
         inputScheduledTime.elm.on('change', () => {
@@ -210,12 +213,12 @@
                 alert(err);
             }
         }).addClass('btn');
-        rpgen3.addBtn(html, '演奏中止', () => {
-            rpgen4.nsx39Scheduler.stop();
+        rpgen3.addBtn(html, '演奏中止', async () => {
+            await rpgen4.nsx39Scheduler.stop();
             scheduledToEnd('中止');
         }).addClass('btn');
-        rpgen3.addBtn(html, '演奏開始', () => {
-            rpgen4.nsx39Scheduler.play();
+        rpgen3.addBtn(html, '演奏開始', async () => {
+            await rpgen4.nsx39Scheduler.play();
             scheduledToEnd(new Date(Date.now() + rpgen4.nsx39Scheduler.scheduledTime + rpgen4.nsx39Scheduler.duration).toTimeString());
         }).addClass('btn');
     }
