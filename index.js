@@ -73,11 +73,21 @@
         });
         rpgen3.addBtn(html, 'NSX-39に接続', async () => {
             try {
-                await rpgen4.nsx39Scheduler.nsx39.requestMIDIAccess();
+                await rpgen4.nsx39Scheduler.nsx39.open();
                 viewStatus('接続成功');
             } catch (err) {
                 console.error(err);
                 viewStatus('接続失敗');
+            }
+        }).addClass('btn');
+        $('<dd>').appendTo(html);
+        rpgen3.addBtn(html, 'NSX-39を切断', async () => {
+            try {
+                await rpgen4.nsx39Scheduler.nsx39.close();
+                viewStatus('切断成功');
+            } catch (err) {
+                console.error(err);
+                viewStatus('切断失敗');
             }
         }).addClass('btn');
         rpgen3.addBtn(html, '歌詞「ら」を設定', async () => {
