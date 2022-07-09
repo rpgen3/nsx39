@@ -83,7 +83,7 @@
         $('<dd>').appendTo(html);
         rpgen3.addBtn(html, 'close(PCのフリーズ防止用)', async () => {
             await rpgen4.nsx39Scheduler.nsx39.midiOutput.close();
-            viewStatus(`Closed at ${(new Date).toTimeString()}.`);
+            viewStatus(`closed at ${(new Date).toTimeString()}`);
         }).addClass('btn');
         rpgen3.addBtn(html, '歌詞「ら」を設定', async () => {
             rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'ら'}});
