@@ -3,7 +3,7 @@ export const nsx39 = new class {
     constructor() {
         this.midiOutput = null;
     }
-    async requestMIDIAccess() {
+    async open() {
         const midiAccess = await navigator.requestMIDIAccess({
             sysex: true,
             software: true
@@ -11,6 +11,9 @@ export const nsx39 = new class {
         const nsx39 = [...midiAccess.outputs].map(([_, v]) => v).find(({name}) => name === 'NSX-39 ');
         if (!nsx39) throw 'NSX-39 is not found.';
         this.midiOutput = nsx39;
+    }
+    async close() {
+        await this.midiOutput.close();
     }
     send({data, timestamp}) {
         this.midiOutput.send(data, timestamp);
