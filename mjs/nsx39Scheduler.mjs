@@ -10,10 +10,10 @@ export const nsx39Scheduler = new class {
         this.id = -1;
         this.startedTime = 0;
         this.duration = 0;
-        this.scheduledTime = 100;
+        this.scheduledTime = 300;
         this.shiftedLyricTime = 10;
         this.shiftedNoteTime = 150;
-        this.shiftedNoteOffTime = 10;
+        this.shiftedNoteOffTime = 1;
         this.shiftedPitch = 0;
         this.shiftedOctave = 0;
     }
