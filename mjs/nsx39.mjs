@@ -13,7 +13,7 @@ export const nsx39 = new class {
         this.midiOutput = nsx39;
     }
     send({data, timestamp}) {
-        this.midiOutput?.send(data, timestamp);
+        this.midiOutput.send(data, timestamp);
     }
     noteOn({data: {channel, pitch, velocity}, timestamp}) {
         this.send({
