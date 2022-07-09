@@ -1,20 +1,19 @@
 import {nsx39TextMap} from 'https://rpgen3.github.io/nsx39/mjs/nsx39TextMap.mjs';
 export const nsx39 = new class {
-    #midiOutput = null;
-    async open() {
+    constructor () {
+        this.midiOutput = null;
+    }
+    async requestMIDIAccess() {
         const midiAccess = await navigator.requestMIDIAccess({
             sysex: true,
             software: true
         });
         const nsx39 = [...midiAccess.outputs].map(([_, v]) => v).find(({name}) => name === 'NSX-39 ');
         if (!nsx39) throw 'NSX-39 is not found.';
-        this.#midiOutput = nsx39;
-    }
-    async close() {
-        await this.#midiOutput?.close();
+        this.midiOutput = nsx39;
     }
     send({data, timestamp}) {
-        this.#midiOutput?.send(data, timestamp);
+        this.midiOutput?.send(data, timestamp);
     }
     noteOn({data: {channel, pitch, velocity}, timestamp}) {
         this.send({
