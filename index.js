@@ -73,7 +73,7 @@
         });
         rpgen3.addBtn(html, 'NSX-39に接続', async () => {
             try {
-                await rpgen4.nsx39Scheduler.nsx39.open();
+                await rpgen4.nsx39Scheduler.nsx39.requestMIDIAccess();
                 viewStatus('接続成功');
             } catch (err) {
                 console.error(err);
@@ -82,13 +82,8 @@
         }).addClass('btn');
         $('<dd>').appendTo(html);
         rpgen3.addBtn(html, 'NSX-39を切断', async () => {
-            try {
-                await rpgen4.nsx39Scheduler.nsx39.close();
-                viewStatus('切断成功');
-            } catch (err) {
-                console.error(err);
-                viewStatus('切断失敗');
-            }
+            await rpgen4.nsx39Scheduler.nsx39.midiOutput.close();
+            viewStatus(`Closed at ${(new Date).toTimeString()}.`);
         }).addClass('btn');
         rpgen3.addBtn(html, '歌詞「ら」を設定', async () => {
             rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'ら'}});
