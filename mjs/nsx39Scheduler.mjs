@@ -14,19 +14,19 @@ export const nsx39Scheduler = new class {
         this.shiftedLyricTime = 10;
         this.shiftedNoteTime = 150;
         this.shiftedNoteOffTime = 10;
+        this.shiftedPitch = 0;
+        this.shiftedOctave = 0;
     }
     load({tempos, programChanges, ustNotes, midiNotes}) {
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         this.programChanges = new ArrayAdvancer(programChanges || []);
         this.ustNotes = new ArrayAdvancer(tuning39({
-            messages: ustNotes || [],
-            shiftedNoteTime: this.shiftedNoteTime,
-            shiftedNoteOffTime: this.shiftedNoteOffTime
+            ...this,
+            messages: ustNotes || []
         }));
         this.midiNotes = new ArrayAdvancer(tuning39({
-            messages: midiNotes || [],
-            shiftedNoteTime: this.shiftedNoteTime,
-            shiftedNoteOffTime: this.shiftedNoteOffTime
+            ...this,
+            messages: midiNotes || []
         }));
         let startDeltaTime = 0;
         let startMilliSecond = 0;
