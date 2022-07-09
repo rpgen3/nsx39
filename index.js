@@ -176,7 +176,7 @@
         const inputShiftedPitch = rpgen3.addSelect(html, {
             label: 'ピッチシフト',
             save: true,
-            list: [...Array(13).keys()].map(v => v - 6),
+            list: [...Array(13).keys()].map(v => v - 6).reverse(),
             value: 0
         });
         inputShiftedPitch.elm.on('change', () => {
@@ -185,7 +185,7 @@
         const inputShiftedOctave = rpgen3.addSelect(html, {
             label: 'オクターブシフト',
             save: true,
-            list: [...Array(9).keys()].map(v => v - 4),
+            list: [...Array(9).keys()].map(v => v - 4).reverse(),
             value: 0
         });
         inputShiftedOctave.elm.on('change', () => {
