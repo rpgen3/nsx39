@@ -216,6 +216,11 @@
                 ...[2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16].map(v => [`Ch.${v}`, v - 1])
             ]
         });
+        $('<dd>').appendTo(html);
+        const isMutedExcept39 = rpgen3.addInputBool(html, {
+            label: 'ミク以外をミュートする',
+            save: true
+        });
         const scheduledToEnd = addLabeledText(html, {
             label: '終了予定：',
             value: '未定'
@@ -224,7 +229,8 @@
             try {
                 rpgen4.nsx39Scheduler.load(makeMessageArrays({
                     howToPlay: howToPlay(),
-                    swapChannel: swapChannel()
+                    swapChannel: swapChannel(),
+                    isMutedExcept39: isMutedExcept39()
                 }));
             } catch (err) {
                 console.error(err);
@@ -248,7 +254,7 @@
             tempos: rpgen4.UstTempoMessage.makeArray(ustEventArray)
         };
     };
-    const makeMidi = ({howToPlay, swapChannel}) => {
+    const makeMidi = ({howToPlay, swapChannel, isMutedExcept39}) => {
         const swap = messages => {
             if (howToPlay === playing_midi) {
                 if (swapChannel === null) return messages;
@@ -265,27 +271,28 @@
                 });
             }
         };
+        const mute = messages => isMutedExcept39 ? messages.filter(({channel}) => channel === 0) : messages;
         const midiNoteArray = rpgen4.MidiNote.makeArray(g_midi);
         return {
-            midiNotes: swap(rpgen4.MidiNoteMessage.makeArray(midiNoteArray)),
+            midiNotes: mute(swap(rpgen4.MidiNoteMessage.makeArray(midiNoteArray))),
             tempos: rpgen4.MidiTempoMessage.makeArray(g_midi),
-            programChanges: swap(rpgen4.MidiProgramChangeMessage.makeArray(g_midi))
+            programChanges: mute(swap(rpgen4.MidiProgramChangeMessage.makeArray(g_midi)))
         };
     };
-    const makeMessageArrays = ({howToPlay, swapChannel}) => {
+    const makeMessageArrays = ({howToPlay, swapChannel, isMutedExcept39}) => {
         switch (howToPlay) {
             case playing_ust:
                 if (g_ust === null) throw 'Must input UST file.';
                 return makeUst();
             case playing_midi:
                 if (g_midi === null) throw 'Must input MIDI file.';
-                return makeMidi({howToPlay, swapChannel});
+                return makeMidi({howToPlay, swapChannel, isMutedExcept39});
             case playing_both:
                 if (g_ust === null) throw 'Must input UST file.';
                 if (g_midi === null) throw 'Must input MIDI file.';
                 return {
                     ...makeUst(),
-                    ...makeMidi({howToPlay, swapChannel})
+                    ...makeMidi({howToPlay, swapChannel, isMutedExcept39})
                 };
         }
     };
