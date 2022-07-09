@@ -88,8 +88,8 @@
             await rpgen4.nsx39Scheduler.nsx39.midiOutput.close();
             viewWhenClosed((new Date).toTimeString());
         }).addClass('btn');
-        rpgen3.addBtn(html, '歌詞「ら」を設定', async () => {
-            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'ら'}});
+        rpgen3.addBtn(html, '歌詞「あ」を設定', async () => {
+            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'あ'}});
         }).addClass('btn');
         rpgen3.addBtn(html, '発声テスト', async () => {
             rpgen4.nsx39Scheduler.nsx39.noteOn({
