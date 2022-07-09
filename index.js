@@ -157,7 +157,7 @@
             label: 'ノートオフを先行させる[デルタ時間]',
             save: true,
             list: [...Array(20).keys()],
-            value: 10
+            value: 1
         });
         inputShiftedNoteOffTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.shiftedNoteOffTime = inputShiftedNoteOffTime();
