@@ -156,7 +156,7 @@
         const inputShiftedNoteOffTime = rpgen3.addSelect(html, {
             label: 'ノートオフを先行させる[デルタ時間]',
             save: true,
-            list: [...Array(10).keys()].map(v => v * 10),
+            list: [...Array(20).keys()],
             value: 10
         });
         inputShiftedNoteOffTime.elm.on('change', () => {
