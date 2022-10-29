@@ -31,7 +31,7 @@ export const tuning39 = ({
                         excluded.add(i);
                     }
                 }
-            } else if (i !== 0) {
+            } else if (i !== 0) { // ポケミク特有のバグの対応（異なる歌詞のときノートオフを省略できない）
                 if (lyric === messages[i - 1].lyric && !vowels.has(lyric)) {
                     messages[i - 1].when -= shiftedNoteOffTime;
                     excluded.delete(i - 1);
