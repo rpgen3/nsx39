@@ -1,5 +1,5 @@
 // https://webgk.gakken.jp/otonanokagaku/nsx39/appli/01/js/nsx39.js
-export const nsx39TextMap = {
+export const nsx39TextMap = Object.freeze({
     ...{
         "あ": 0x00, "い": 0x01, "う": 0x02, "え": 0x03, "お": 0x04, "か": 0x05, "き": 0x06, "く": 0x07,
         "け": 0x08, "こ": 0x09, "が": 0x0A, "ぎ": 0x0B, "ぐ": 0x0C, "げ": 0x0D, "ご": 0x0E,
@@ -43,4 +43,4 @@ export const nsx39TextMap = {
         "りゃ": 0x74, "りゅ": 0x75, "りょ": 0x76,
         "うぃ": 0x78, "うぇ": 0x79, "うぉ": 0x7A
     }
-};
+});
