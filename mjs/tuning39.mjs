@@ -1,3 +1,11 @@
+const vowels = new Set([
+    "あ",
+    "い",
+    "う",
+    "え",
+    "お",
+    "ん",
+]);
 export const tuning39 = ({
     messages,
     shiftedNoteTime = 0,
@@ -12,11 +20,27 @@ export const tuning39 = ({
         if (channel === 0 && velocity !== 0) noteOn.set(when, pitch);
     }
     const excluded = new Set;
+    let lastLyric = null;
     for (const [i, v] of messages.entries()) {
-        const {when, channel, pitch, velocity} = v;
-        if (channel === 0 && velocity === 0 && noteOn.has(when)) {
-            if (pitch === noteOn.get(when)) v.when -= shiftedNoteOffTime;
-            else excluded.add(i);
+        const {when, channel, pitch, velocity, lyric} = v;
+        if (channel === 0) {
+            if (velocity === 0) {
+                if (noteOn.has(when)) {
+                    if (pitch === noteOn.get(when)) {
+                        v.when -= shiftedNoteOffTime;
+                    } else {
+                        excluded.add(i);
+                    }
+                    lastLyric = lyric;
+                } else {
+                    lastLyric = null;
+                }
+            } else {
+                if (lyric !== null && lyric === lastLyric && !vowels.has(lyric)) {
+                    messages[i - 1].when -= shiftedNoteOffTime;
+                    excluded.delete(i - 1);
+                }
+            }
         }
     }
     return messages.filter((_, i) => !excluded.has(i));
