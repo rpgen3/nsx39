@@ -20,7 +20,6 @@ export const tuning39 = ({
         if (channel === 0 && velocity !== 0) noteOn.set(when, pitch);
     }
     const excluded = new Set;
-    let lastLyric = null;
     for (const [i, v] of messages.entries()) {
         const {when, channel, pitch, velocity, lyric} = v;
         if (channel === 0) {
@@ -31,12 +30,9 @@ export const tuning39 = ({
                     } else {
                         excluded.add(i);
                     }
-                    lastLyric = lyric;
-                } else {
-                    lastLyric = null;
                 }
-            } else {
-                if (lyric !== null && lyric === lastLyric && !vowels.has(lyric)) {
+            } else if (i !== 0) {
+                if (lyric === messages[i - 1].lyric && !vowels.has(lyric)) {
                     messages[i - 1].when -= shiftedNoteOffTime;
                     excluded.delete(i - 1);
                 }
