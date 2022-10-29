@@ -21,13 +21,12 @@ export class UstEvent {
             const length = this.toNullableNumber(m.get('Length'));
             const noteNum = this.toNullableNumber(m.get('NoteNum'));
             const lyric = this.toNullableString(m.get('Lyric'));
-            const intensity = this.toNullableNumber(m.get('Intensity'));
+            const intensity = this.toNullableNumber(m.get('Intensity')) || 100;
             const tempo = this.toNullableNumber(m.get('Tempo'));
             if (
                 length === null &&
                 noteNum === null &&
                 lyric === null &&
-                intensity === null &&
                 tempo === null
             ) continue;
             result.push(new this({length, noteNum, lyric, intensity, tempo}));
