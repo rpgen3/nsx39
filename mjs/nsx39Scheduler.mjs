@@ -63,20 +63,20 @@ export const nsx39Scheduler = new class {
         while (!this.programChanges.done && this.programChanges.head.when < when) {
             const data = this.programChanges.head;
             const timestamp = data.when + this.startedTime;
-            nsx39.programChange({data, timestamp});
+            this.nsx39.programChange({data, timestamp});
             this.programChanges.advance();
         }
         while (!this.ustNotes.done && this.ustNotes.head.when < when) {
             const data = this.ustNotes.head;
             const timestamp = data.when + this.startedTime;
-            if (data.velocity) nsx39.setLyric({data, timestamp: timestamp - this.shiftedLyricTime});
-            nsx39.noteOn({data, timestamp});
+            if (data.velocity) this.nsx39.setLyric({data, timestamp: timestamp - this.shiftedLyricTime});
+            this.nsx39.noteOn({data, timestamp});
             this.ustNotes.advance();
         }
         while (!this.midiNotes.done && this.midiNotes.head.when < when) {
             const data = this.midiNotes.head;
             const timestamp = data.when + this.startedTime;
-            nsx39.noteOn({data, timestamp});
+            this.nsx39.noteOn({data, timestamp});
             this.midiNotes.advance();
         }
     }
@@ -91,7 +91,7 @@ export const nsx39Scheduler = new class {
         this.isStopping = true;
         clearInterval(this.id);
         return new Promise(resolve => {
-            const id = setInterval(() => nsx39.allSoundOff());
+            const id = setInterval(() => this.nsx39.allSoundOff());
             setTimeout(() => {
                 clearInterval(id);
                 this.isStopping = false;
