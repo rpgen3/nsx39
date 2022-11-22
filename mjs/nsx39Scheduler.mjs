@@ -1,11 +1,11 @@
 import {delta2sec} from 'https://rpgen3.github.io/piano/mjs/midi/sec2delta.mjs';
 import {ArrayAdvancer} from 'https://rpgen3.github.io/nsx39/mjs/ArrayAdvancer.mjs';
 import {UstTempoMessage} from 'https://rpgen3.github.io/nsx39/mjs/UstTempoMessage.mjs';
-import {nsx39} from 'https://rpgen3.github.io/nsx39/mjs/nsx39.mjs';
+import {Nsx39} from 'https://rpgen3.github.io/nsx39/mjs/midiOutput/Nsx39.mjs';
 import {tuning39} from 'https://rpgen3.github.io/nsx39/mjs/tuning39.mjs';
 export const nsx39Scheduler = new class {
     constructor() {
-        this.nsx39 = nsx39;
+        this.nsx39 = new Nsx39;
         this.isStopping = false;
         this.id = -1;
         this.startedTime = 0;
