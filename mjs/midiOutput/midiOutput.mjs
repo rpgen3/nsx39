@@ -38,4 +38,4 @@ export class MidiOutput {
             });
         }
     }
-}();
+};
