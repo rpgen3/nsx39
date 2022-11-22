@@ -7,7 +7,7 @@ export class MidiOutput {
             sysex: true,
             software: true
         });
-        return [...midiAccess.outputs];
+        return midiAccess.outputs;
     }
     send({data, timestamp}) {
         this.midiOutput.send(data, timestamp);
