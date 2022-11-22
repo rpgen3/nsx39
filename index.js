@@ -80,14 +80,6 @@
                 viewStatus('接続失敗');
             }
         }).addClass('btn');
-        const viewWhenClosed = addLabeledText(html, {
-            label: 'closed at ',
-            value: 'never'
-        });
-        rpgen3.addBtn(html, 'close(PCのフリーズ防止用)', async () => {
-            await rpgen4.nsx39Scheduler.nsx39.midiOutput.close();
-            viewWhenClosed((new Date).toTimeString());
-        }).addClass('btn');
         rpgen3.addBtn(html, '歌詞「あ」を設定', async () => {
             rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'あ'}});
         }).addClass('btn');
