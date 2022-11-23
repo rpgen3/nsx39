@@ -80,17 +80,27 @@
                 viewStatus('接続失敗');
             }
         }).addClass('btn');
-        rpgen3.addBtn(html, '歌詞「あ」を設定', async () => {
-            rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'あ'}});
+        rpgen3.addBtn(html, '歌詞「あ」を設定', () => {
+            try {
+                rpgen4.nsx39Scheduler.nsx39.setLyric({data: {lyric: 'あ'}});
+            } catch (err) {
+                console.error(err);
+                alert(err);
+            }
         }).addClass('btn');
-        rpgen3.addBtn(html, '発声テスト(C5)', async () => {
-            rpgen4.nsx39Scheduler.nsx39.noteOn({
-                data: {channel: 0, pitch: 0x48, velocity: 100}
-            });
-            rpgen4.nsx39Scheduler.nsx39.noteOn({
-                data: {channel: 0, pitch: 0x48, velocity: 0},
-                timestamp: performance.now() + 500
-            });
+        rpgen3.addBtn(html, '発声テスト(C5)', () => {
+            try {
+                rpgen4.nsx39Scheduler.nsx39.noteOn({
+                    data: {channel: 0, pitch: 0x48, velocity: 100}
+                });
+                rpgen4.nsx39Scheduler.nsx39.noteOn({
+                    data: {channel: 0, pitch: 0x48, velocity: 0},
+                    timestamp: performance.now() + 500
+                });
+            } catch (err) {
+                console.error(err);
+                alert(err);
+            }
         }).addClass('btn');
     }
     let g_ust = null;
