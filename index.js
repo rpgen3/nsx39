@@ -135,6 +135,15 @@
             ],
             value: 100
         });
+        const inputSpeedRate = rpgen3.addSelect(html, {
+            label: '演奏速度',
+            save: true,
+            list: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(v => [`x${v}`, v]),
+            value: 'x1'
+        });
+        inputSpeedRate.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.speedRate = inputSpeedRate();
+        }).trigger('change');
         inputScheduledTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.scheduledTime = inputScheduledTime();
         }).trigger('change');
