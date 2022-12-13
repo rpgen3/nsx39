@@ -3,7 +3,7 @@ export class MidiOutput {
         this.midiOutput = null;
         this.allChannels = new Proxy(this, {
             get(target, prop) {
-                return ({data, timestamp}) => {
+                return ({data, timestamp} = {}) => {
                     for (let i = 0; i < 0x10; i++) {
                         target[prop]({data: {channel: i, ...data}, timestamp});
                     }
