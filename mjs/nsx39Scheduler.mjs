@@ -92,7 +92,7 @@ export const nsx39Scheduler = new class {
         this.isStopping = true;
         clearInterval(this.id);
         return new Promise(resolve => {
-            const id = setInterval(() => this.nsx39.allSoundOff());
+            const id = setInterval(() => this.nsx39.allChannels.allNotesOff());
             setTimeout(() => {
                 clearInterval(id);
                 this.isStopping = false;
