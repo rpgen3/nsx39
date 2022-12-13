@@ -35,13 +35,6 @@ export class MidiOutput {
             timestamp
         });
     }
-    // 発音中の音や残響を即時に停止
-    allSoundOff({data: {channel}, timestamp}) {
-        this.send({
-            data: [0xB0 | channel, 0x78, 0x00],
-            timestamp
-        });
-    }
     // 音色の初期化
     resetAllControllers({data: {channel}, timestamp}) {
         this.send({
@@ -53,6 +46,13 @@ export class MidiOutput {
     allNotesOff({data: {channel}, timestamp}) {
         this.send({
             data: [0xB0 | channel, 0x7B, 0x00],
+            timestamp
+        });
+    }
+    // 発音中の音や残響を即時に停止
+    allSoundOff({data: {channel}, timestamp}) {
+        this.send({
+            data: [0xB0 | channel, 0x78, 0x00],
             timestamp
         });
     }
