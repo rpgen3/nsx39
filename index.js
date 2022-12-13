@@ -256,6 +256,11 @@
             await rpgen4.nsx39Scheduler.play();
             scheduledToEnd(new Date(Date.now() + rpgen4.nsx39Scheduler.scheduledTime + rpgen4.nsx39Scheduler.duration).toTimeString());
         }).addClass('btn');
+        $('<dd>').appendTo(html);
+        rpgen3.addBtn(html, '音色の初期化', async () => {
+            rpgen4.nsx39Scheduler.nsx39.allChannels.resetAllControllers();
+            scheduledToEnd('音色を初期化した');
+        }).addClass('btn');
     }
     const makeUst = () => {
         const ustEventArray = rpgen4.UstEvent.makeArray(g_ust);
