@@ -258,7 +258,7 @@
         }).addClass('btn');
         $('<dd>').appendTo(html);
         rpgen3.addBtn(html, '音色の初期化', async () => {
-            rpgen4.nsx39Scheduler.nsx39.allChannels.resetAllControllers();
+            rpgen4.nsx39Scheduler.nsx39.allChannels.programChange({data: {programChange: 0x00}})
             scheduledToEnd('音色を初期化した');
         }).addClass('btn');
     }
