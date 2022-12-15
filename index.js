@@ -106,29 +106,39 @@
     let g_ust = null;
     {
         const {html} = addHideArea('input UST file');
-        $('<dt>').appendTo(html).text('USTファイル');
+        const viewStatus = addLabeledText(html, {
+            label: 'USTファイル：',
+            value: '入力したファイル名'
+        });
         $('<input>').appendTo($('<dd>').appendTo(html)).prop({
             type: 'file',
             accept: '.ust'
         }).on('change', async ({target}) => {
-            const {files} = target;
-            if(!files.length) return;
-            const file = files[0];
-            const a = new Uint8Array(await file.arrayBuffer());
-            g_ust = Encoding.convert(a, {
-                to: 'unicode',
-                from: Encoding.detect(a),
-                type: 'string'
-            });
+            const file = target.files.item(0);
+            viewStatus(file?.name);
+            if (file) {
+                const a = new Uint8Array(await file.arrayBuffer());
+                g_ust = Encoding.convert(a, {
+                    to: 'unicode',
+                    from: Encoding.detect(a),
+                    type: 'string'
+                });
+            }
         });
     }
     let g_midi = null;
     {
         const {html} = addHideArea('input MIDI file');
-        $('<dt>').appendTo(html).text('MIDIファイル');
+        const viewStatus = addLabeledText(html, {
+            label: 'MIDIファイル：',
+            value: '入力したファイル名'
+        });
         const inputFile = $('<input>').appendTo($('<dd>').appendTo(html)).prop({
             type: 'file',
             accept: '.mid'
+        }).on('change', async ({target}) => {
+            const file = target.files.item(0);
+            viewStatus(file?.name);
         });
         MidiParser.parse(inputFile.get(0), v => {
             g_midi = v;
