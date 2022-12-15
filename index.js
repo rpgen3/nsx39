@@ -132,6 +132,7 @@
         });
         MidiParser.parse(inputFile.get(0), v => {
             g_midi = v;
+            updateSwapChannel();
         });
     }
     {
@@ -203,6 +204,33 @@
             rpgen4.nsx39Scheduler.shiftedOctave = inputShiftedOctave();
         }).trigger('change');
     }
+    const getTrackNameMap = () => {
+        const trackNameMap = new Map;
+        for (const {event} of g_midi.track) {
+            let trackName = null;
+            let trackChannel = null;
+            for (const v of event) {
+                if (v.type === 0xff && v.metaType === 0x03) {
+                    trackName = v.data;
+                }
+                if ('channel' in v) {
+                    trackChannel = v.channel;
+                }
+            }
+            if (trackName !== null && trackChannel !== null) {
+                const decodedTrackName = Encoding.convert(trackName, {
+                    to: 'unicode',
+                    from: 'sjis',
+                    type: 'string'
+                });
+                trackNameMap.set(trackChannel, decodedTrackName);
+                continue;
+            }
+        }
+        return trackNameMap;
+    };
+    window.getTrackNameMap = getTrackNameMap;
+    let updateSwapChannel = null;
     const playing_ust = 0;
     const playing_midi = 1;
     const playing_both = 2;
@@ -217,16 +245,20 @@
                 '同時演奏': playing_both
             }
         });
-        $('<dd>').appendTo(html).text('同時演奏の場合');
-        $('<dd>').appendTo(html).text('Ch.1はUSTが独占します');
         const swapChannel = rpgen3.addSelect(html, {
             label: 'MIDIのCh.1の交換',
-            save: true,
-            list: [
-                ['交換しない', null],
-                ...[2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16].map(v => [`Ch.${v}`, v - 1])
-            ]
         });
+        updateSwapChannel = () => {
+            const trackNameMap = getTrackNameMap();
+            const list = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16].map(v => [[
+                `Ch.${v}`,
+                trackNameMap.has(v - 1) ? trackNameMap.get(v - 1) : [],
+            ].flat().join(' '), v - 1]);
+            swapChannel.update([
+                ['交換しない', null],
+                ...list,
+            ]);
+        };
         $('<dd>').appendTo(html);
         const isMutedExcept39 = rpgen3.addInputBool(html, {
             label: 'ミク以外をミュートする',
