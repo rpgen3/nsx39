@@ -253,7 +253,7 @@
             swapChannel.update(list);
             const loaded = rpgen3.load(g_midi_file_name);
             if (loaded !== null) {
-                swapChannel(list.find(([_, v]) => v === loaded)[0]);
+                swapChannel(list.find(([_, v]) => v == loaded)[0]);
             }
         };
         $('<dd>').appendTo(html);
