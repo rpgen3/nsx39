@@ -250,7 +250,6 @@
                 ].flat().join(' '),
                 v - 1,
             ]);
-            list[0][0] = `交換しない ${list[0][0]}`;
             swapChannel.update(list);
             const loaded = rpgen3.load(g_midi_file_name);
             if (loaded !== null) {
