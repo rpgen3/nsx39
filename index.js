@@ -19,7 +19,8 @@
     const rpgen3 = await importAll([
         'input',
         'css',
-        'util'
+        'util',
+        'save',
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
     const rpgen4 = await importAll([
         'https://rpgen3.github.io/maze/mjs/heap/Heap.mjs',
@@ -27,14 +28,15 @@
             'MidiNote',
             'MidiNoteMessage',
             'MidiProgramChangeMessage',
-            'MidiTempoMessage'
+            'MidiTempoMessage',
+            'TrackNameMap',
         ].map(v => `https://rpgen3.github.io/piano/mjs/midi/${v}.mjs`),
         [
             'UstEvent',
             'UstNote',
             'UstNoteMessage',
             'UstTempoMessage',
-            'nsx39Scheduler'
+            'nsx39Scheduler',
         ].map(v => `https://rpgen3.github.io/nsx39/mjs/${v}.mjs`)
     ].flat());
     Promise.all([
@@ -127,6 +129,7 @@
         });
     }
     let g_midi = null;
+    let g_midi_file_name = null;
     {
         const {html} = addHideArea('input MIDI file');
         const viewStatus = addLabeledText(html, {
@@ -139,6 +142,9 @@
         }).on('change', async ({target}) => {
             const file = target.files.item(0);
             viewStatus(file?.name);
+            if (file?.name) {
+                g_midi_file_name = file.name;
+            }
         });
         MidiParser.parse(inputFile.get(0), v => {
             g_midi = v;
@@ -214,32 +220,6 @@
             rpgen4.nsx39Scheduler.shiftedOctave = inputShiftedOctave();
         }).trigger('change');
     }
-    const getTrackNameMap = () => {
-        const trackNameMap = new Map;
-        for (const {event} of g_midi.track) {
-            let trackName = null;
-            let trackChannel = null;
-            for (const v of event) {
-                if (v.type === 0xff && v.metaType === 0x03) {
-                    trackName = v.data;
-                }
-                if ('channel' in v) {
-                    trackChannel = v.channel;
-                }
-            }
-            if (trackName !== null && trackChannel !== null) {
-                const decodedTrackName = Encoding.convert(trackName, {
-                    to: 'unicode',
-                    from: 'sjis',
-                    type: 'string'
-                });
-                trackNameMap.set(trackChannel, decodedTrackName);
-                continue;
-            }
-        }
-        return trackNameMap;
-    };
-    window.getTrackNameMap = getTrackNameMap;
     let updateSwapChannel = null;
     const playing_ust = 0;
     const playing_midi = 1;
@@ -258,16 +238,24 @@
         const swapChannel = rpgen3.addSelect(html, {
             label: 'MIDIのCh.1の交換',
         });
+        swapChannel.elm.on('change', () => {
+            rpgen3.save(g_midi_file_name, swapChannel());
+        });
         updateSwapChannel = () => {
-            const trackNameMap = getTrackNameMap();
-            const list = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16].map(v => [[
-                `Ch.${v}`,
-                trackNameMap.has(v - 1) ? trackNameMap.get(v - 1) : [],
-            ].flat().join(' '), v - 1]);
-            swapChannel.update([
-                ['交換しない', null],
-                ...list,
+            const trackNameMap = new rpgen4.TrackNameMap(g_midi);
+            const list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16].map(v => [
+                [
+                    `Ch.${v}`,
+                    trackNameMap.has(v - 1) ? trackNameMap.get(v - 1) : [],
+                ].flat().join(' '),
+                v - 1,
             ]);
+            list[0][0] = `交換しない ${list[0][0]}`;
+            swapChannel.update(list);
+            const loaded = rpgen3.load(g_midi_file_name);
+            if (loaded !== null) {
+                swapChannel(loaded);
+            }
         };
         $('<dd>').appendTo(html);
         const isMutedExcept39 = rpgen3.addInputBool(html, {
