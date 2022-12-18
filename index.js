@@ -303,16 +303,25 @@
     const makeMidi = ({howToPlay, swapChannel, isMutedExcept39}) => {
         const swap = messages => {
             if (howToPlay === playing_midi) {
-                if (swapChannel === null) return messages;
+                if (swapChannel === 0) {
+                    return messages;
+                }
                 for (const v of messages) {
-                    if (v.channel === 0) v.channel = swapChannel;
-                    else if (v.channel === swapChannel) v.channel = 0;
+                    if (v.channel === 0) {
+                        v.channel = swapChannel;
+                    } else if (v.channel === swapChannel) {
+                        v.channel = 0;
+                    }
                 }
                 return messages;
             } else {
-                if (swapChannel === null) return messages.filter(({channel}) => channel !== 0);
+                if (swapChannel === 0) {
+                    return messages.filter(({channel}) => channel !== 0);
+                }
                 return messages.filter(({channel}) => channel !== swapChannel).map(v => {
-                    if (v.channel === 0) v.channel = swapChannel;
+                    if (v.channel === 0) {
+                        v.channel = swapChannel;
+                    }
                     return v;
                 });
             }
