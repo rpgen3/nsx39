@@ -290,7 +290,7 @@
             scheduledToEnd(new Date(Date.now() + rpgen4.nsx39Scheduler.scheduledTime + rpgen4.nsx39Scheduler.duration).toTimeString());
         }).addClass('btn');
         rpgen3.addBtn(html, '音色の初期化', async () => {
-            rpgen4.nsx39Scheduler.nsx39.allChannels.programChange({data: {programChange: 0x00}})
+            rpgen4.nsx39Scheduler.nsx39.allChannels.programChange({data: {program: 0x00}})
             scheduledToEnd('音色を初期化した');
         }).addClass('btn');
         $('<dd>').appendTo(html);
