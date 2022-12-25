@@ -18,8 +18,8 @@ export const nsx39Scheduler = new class {
         this.shiftedPitch = 0;
         this.shiftedOctave = 0;
     }
-    init() {
-        const nsx39 = Nsx39.fetchNsx39();
+    async init() {
+        const nsx39 = await Nsx39.fetchNsx39();
         if (nsx39 === null) {
             throw 'NSX-39 is not found.';
         } else {
