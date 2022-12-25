@@ -75,7 +75,7 @@
         });
         rpgen3.addBtn(html, 'NSX-39に接続', async () => {
             try {
-                await rpgen4.nsx39Scheduler.nsx39.init();
+                await rpgen4.nsx39Scheduler.init();
                 viewStatus('接続成功');
             } catch (err) {
                 console.error(err);
