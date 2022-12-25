@@ -1,6 +1,13 @@
 export class MidiOutput {
-    constructor () {
-        this.midiOutput = null;
+    static async fetchMidiOutputs() {
+        const midiAccess = await navigator.requestMIDIAccess({
+            sysex: true,
+            software: true
+        });
+        return midiAccess.outputs;
+    }
+    constructor(midiOutput) {
+        this.midiOutput = midiOutput;
         this.allChannels = new Proxy(this, {
             get(target, prop) {
                 return ({data, timestamp} = {}) => {
@@ -10,13 +17,6 @@ export class MidiOutput {
                 };
             }
         });
-    }
-    async fetchMidiOutputs() {
-        const midiAccess = await navigator.requestMIDIAccess({
-            sysex: true,
-            software: true
-        });
-        return midiAccess.outputs;
     }
     send({data, timestamp}) {
         this.midiOutput.send(data, timestamp);
