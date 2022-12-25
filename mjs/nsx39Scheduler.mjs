@@ -4,8 +4,16 @@ import {UstTempoMessage} from 'https://rpgen3.github.io/nsx39/mjs/UstTempoMessag
 import {Nsx39} from 'https://rpgen3.github.io/nsx39/mjs/midiOutput/Nsx39.mjs';
 import {tuning39} from 'https://rpgen3.github.io/nsx39/mjs/tuning39.mjs';
 export const nsx39Scheduler = new class {
+    init() {
+        const nsx39 = Nsx39.fetchNsx39();
+        if (nsx39 === null) {
+            throw 'NSX-39 is not found.';
+        } else {
+            this.nsx39 = new Nsx39(nsx39);
+        }
+    }
     constructor() {
-        this.nsx39 = new Nsx39;
+        this.nsx39 = null;
         this.isStopping = false;
         this.id = -1;
         this.startedTime = 0;
