@@ -151,8 +151,10 @@
             updateSwapChannel();
         });
     }
+    let isMutedExcept39 = null;
+    let isDisabledProgramChange = null;
     {
-        const {html} = addHideArea('tuning NSX-39');
+        const {html} = addHideArea('settings');
         const inputScheduledTime = rpgen3.addSelect(html, {
             label: 'スケジューリング[ミリ秒]',
             save: true,
@@ -162,6 +164,9 @@
             ],
             value: 100
         });
+        inputScheduledTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.scheduledTime = inputScheduledTime();
+        }).trigger('change');
         const inputSpeedRate = rpgen3.addSelect(html, {
             label: '演奏速度',
             save: true,
@@ -171,9 +176,22 @@
         inputSpeedRate.elm.on('change', () => {
             rpgen4.nsx39Scheduler.speedRate = inputSpeedRate();
         }).trigger('change');
-        inputScheduledTime.elm.on('change', () => {
-            rpgen4.nsx39Scheduler.scheduledTime = inputScheduledTime();
-        }).trigger('change');
+        isMutedExcept39 = rpgen3.addInputBool(html, {
+            label: 'ミク以外をミュートする',
+            save: true
+        });
+        isDisabledProgramChange = rpgen3.addInputBool(html, {
+            label: 'プログラムチェンジを無効化',
+            save: true
+        });
+        $('<dd>').appendTo(html);
+        rpgen3.addBtn(html, '音色の初期化', async () => {
+            rpgen4.nsx39Scheduler.nsx39.allChannels.programChange({data: {program: 0x00}})
+            scheduledToEnd('音色を初期化した');
+        }).addClass('btn');
+    }
+    {
+        const {html} = addHideArea('tuning NSX-39');
         const inputShiftedLyricTime = rpgen3.addSelect(html, {
             label: '事前歌詞入力[ミリ秒]',
             save: true,
@@ -256,14 +274,6 @@
                 swapChannel(list.find(([_, v]) => v === Number(loaded))[0]);
             }
         };
-        const isMutedExcept39 = rpgen3.addInputBool(html, {
-            label: 'ミク以外をミュートする',
-            save: true
-        });
-        const isDisabledProgramChange = rpgen3.addInputBool(html, {
-            label: 'プログラムチェンジを無効化',
-            save: true
-        });
         const scheduledToEnd = addLabeledText(html, {
             label: '終了予定：',
             value: '未定'
@@ -289,11 +299,6 @@
             await rpgen4.nsx39Scheduler.play();
             scheduledToEnd(new Date(Date.now() + rpgen4.nsx39Scheduler.scheduledTime + rpgen4.nsx39Scheduler.duration).toTimeString());
         }).addClass('btn');
-        rpgen3.addBtn(html, '音色の初期化', async () => {
-            rpgen4.nsx39Scheduler.nsx39.allChannels.programChange({data: {program: 0x00}})
-            scheduledToEnd('音色を初期化した');
-        }).addClass('btn');
-        $('<dd>').appendTo(html);
     }
     const makeUst = () => {
         const ustEventArray = rpgen4.UstEvent.makeArray(g_ust);
