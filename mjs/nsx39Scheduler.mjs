@@ -51,7 +51,7 @@ export const nsx39Scheduler = new class {
                 this.midiNotes
             ]) {
                 while(!v.done && v.head.when < when) {
-                    v.head.when = (toMilliSecond(bpm, v.head.when) + startMilliSecond) / this.speedRate;
+                    v.head.when = (toMilliSecond(bpm, v.head.when) + startMilliSecond) / this.speedRate + this.scheduledTime;
                     v.advance();
                 }
             }
