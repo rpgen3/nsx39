@@ -357,7 +357,7 @@
                             done.add(channel);
                             ignoredIndices.add(i);
                             set.add(midiProgramChangeMessage);
-                            midiProgramChangeMessage.when = 0;
+                            midiProgramChangeMessage.when = -rpgen4.nsx39Scheduler.scheduledTime;
                         }
                     }
                     return [
