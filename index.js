@@ -153,7 +153,7 @@
     }
     let isMutedExcept39 = null;
     let isDisabledProgramChange = null;
-    let isProgramChangeBeforehand = null;
+    let isPreProgramChange = null;
     {
         const {html} = addHideArea('settings');
         const inputScheduledTime = rpgen3.addSelect(html, {
@@ -189,7 +189,7 @@
             rpgen4.nsx39Scheduler.nsx39.allChannels.programChange({data: {program: 0x00}})
             scheduledToEnd('音色を初期化した');
         }).addClass('btn');
-        isProgramChangeBeforehand = rpgen3.addInputBool(html, {
+        isPreProgramChange = rpgen3.addInputBool(html, {
             label: 'プログラムチェンジを事前に実行',
             save: true,
             value: true
@@ -290,7 +290,7 @@
                     swapChannel: swapChannel(),
                     isMutedExcept39: isMutedExcept39(),
                     isDisabledProgramChange: isDisabledProgramChange(),
-                    isProgramChangeBeforehand: isProgramChangeBeforehand()
+                    isPreProgramChange: isPreProgramChange()
                 }));
             } catch (err) {
                 console.error(err);
@@ -314,7 +314,7 @@
             tempos: rpgen4.UstTempoMessage.makeArray(ustEventArray)
         };
     };
-    const makeMidi = ({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isProgramChangeBeforehand}) => {
+    const makeMidi = ({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isPreProgramChange}) => {
         const swap = messages => {
             if (howToPlay === playing_midi) {
                 if (swapChannel === 0) {
@@ -347,7 +347,7 @@
             tempos: rpgen4.MidiTempoMessage.makeArray(g_midi),
             programChanges: isDisabledProgramChange ? [] : (() => {
                 const midiProgramChangeMessageArray = mute(swap(rpgen4.MidiProgramChangeMessage.makeArray(g_midi)));
-                if (isProgramChangeBeforehand) {
+                if (isPreProgramChange) {
                     const set = new Set;
                     const done = new Set;
                     const ignoredIndices = new Set;
@@ -370,20 +370,20 @@
             })()
         };
     };
-    const makeMessageArrays = ({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isProgramChangeBeforehand}) => {
+    const makeMessageArrays = ({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isPreProgramChange}) => {
         switch (howToPlay) {
             case playing_ust:
                 if (g_ust === null) throw 'Must input UST file.';
                 return makeUst();
             case playing_midi:
                 if (g_midi === null) throw 'Must input MIDI file.';
-                return makeMidi({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isProgramChangeBeforehand});
+                return makeMidi({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isPreProgramChange});
             case playing_both:
                 if (g_ust === null) throw 'Must input UST file.';
                 if (g_midi === null) throw 'Must input MIDI file.';
                 return {
                     ...makeUst(),
-                    ...makeMidi({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isProgramChangeBeforehand})
+                    ...makeMidi({howToPlay, swapChannel, isMutedExcept39, isDisabledProgramChange, isPreProgramChange})
                 };
         }
     };
