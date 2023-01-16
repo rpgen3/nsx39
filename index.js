@@ -155,6 +155,15 @@
     let isMutedExcept39 = null;
     {
         const {html} = addHideArea('settings');
+        const inputSpeedRate = rpgen3.addSelect(html, {
+            label: '演奏速度',
+            save: true,
+            list: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(v => [`x${v}`, v]),
+            value: 'x1'
+        });
+        inputSpeedRate.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.speedRate = inputSpeedRate();
+        }).trigger('change');
         const inputScheduledTime = rpgen3.addSelect(html, {
             label: 'スケジューリング[ミリ秒]',
             save: true,
@@ -167,14 +176,14 @@
         inputScheduledTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.scheduledTime = inputScheduledTime();
         }).trigger('change');
-        const inputSpeedRate = rpgen3.addSelect(html, {
-            label: '演奏速度',
+        const inputShiftedNoteOffTime = rpgen3.addSelect(html, {
+            label: 'ノートオフを先行させる[デルタ時間]',
             save: true,
-            list: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(v => [`x${v}`, v]),
-            value: 'x1'
+            list: [...Array(10).keys()],
+            value: 1
         });
-        inputSpeedRate.elm.on('change', () => {
-            rpgen4.nsx39Scheduler.speedRate = inputSpeedRate();
+        inputShiftedNoteOffTime.elm.on('change', () => {
+            rpgen4.nsx39Scheduler.shiftedNoteOffTime = inputShiftedNoteOffTime();
         }).trigger('change');
         isMutedExcept39 = rpgen3.addInputBool(html, {
             label: 'ミク以外をミュートする',
@@ -205,15 +214,6 @@
         });
         inputShiftedNoteTime.elm.on('change', () => {
             rpgen4.nsx39Scheduler.shiftedNoteTime = inputShiftedNoteTime();
-        }).trigger('change');
-        const inputShiftedNoteOffTime = rpgen3.addSelect(html, {
-            label: 'ノートオフを先行させる[デルタ時間]',
-            save: true,
-            list: [...Array(10).keys()],
-            value: 1
-        });
-        inputShiftedNoteOffTime.elm.on('change', () => {
-            rpgen4.nsx39Scheduler.shiftedNoteOffTime = inputShiftedNoteOffTime();
         }).trigger('change');
         const inputShiftedPitch = rpgen3.addSelect(html, {
             label: 'ピッチシフト',
