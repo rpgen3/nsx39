@@ -9,13 +9,14 @@ const vowels = new Set([
 export const tuning39 = ({
     messages,
     shiftedNoteTime = 0,
+    shiftedNoteOffTime = 0,
     shiftedPitch = 0,
     shiftedOctave = 0
 }) => {
     for (const v of messages) {
         if (v.channel === 0) {
-            v.when -= shiftedNoteTime;
             v.pitch += shiftedPitch + shiftedOctave * 12;
+            v.when -= shiftedNoteTime;
         }
     }
     const noteOn = new Map;
@@ -28,12 +29,15 @@ export const tuning39 = ({
         if (channel === 0) {
             if (velocity === 0) {
                 if (noteOn.has(when)) {
-                    if (pitch !== noteOn.get(when)) {
+                    if (pitch === noteOn.get(when)) {
+                        v.when -= shiftedNoteOffTime;
+                    } else {
                         excluded.add(i);
                     }
                 }
             } else if (i !== 0) { // ポケミク特有のバグの対応（異なる歌詞のときノートオフを省略できない）
                 if (lyric === messages[i - 1].lyric && !vowels.has(lyric)) {
+                    messages[i - 1].when -= shiftedNoteOffTime;
                     excluded.delete(i - 1);
                 }
             }
