@@ -27,6 +27,11 @@ export const nsx39Scheduler = new class {
         }
     }
     load({tempos, controlChanges, programChanges, ustNotes, midiNotes}) {
+        for (const v of midiNotes) {
+            if (v.channel !== 0 && v.velocity === 0) {
+                v.when -= this.shiftedNoteOffTime;
+            }
+        }
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
         this.controlChanges = new ArrayAdvancer(controlChanges || []);
         this.programChanges = new ArrayAdvancer(programChanges || []);
