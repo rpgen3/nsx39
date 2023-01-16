@@ -8,13 +8,15 @@ const vowels = new Set([
 ]);
 export const tuning39 = ({
     messages,
-    shiftedNoteTime = 0,
     shiftedNoteOffTime = 0,
     shiftedPitch = 0,
     shiftedOctave = 0
 }) => {
-    for (const v of messages) if (v.channel === 0) v.pitch += shiftedPitch + shiftedOctave * 12;
-    for (const v of messages) if (v.channel === 0) v.when -= shiftedNoteTime;
+    for (const v of messages) {
+        if (v.channel === 0) {
+            v.pitch += shiftedPitch + shiftedOctave * 12;
+        }
+    }
     const noteOn = new Map;
     for (const {when, channel, pitch, velocity} of messages) {
         if (channel === 0 && velocity !== 0) noteOn.set(when, pitch);
