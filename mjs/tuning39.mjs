@@ -15,8 +15,8 @@ export const tuning39 = ({
 }) => {
     for (const v of messages) {
         if (v.channel === 0) {
-            v.pitch += shiftedPitch + shiftedOctave * 12;
             v.when -= shiftedNoteTime;
+            v.pitch += shiftedPitch + shiftedOctave * 12;
         }
     }
     const noteOn = new Map;
