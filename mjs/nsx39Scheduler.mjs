@@ -26,8 +26,9 @@ export const nsx39Scheduler = new class {
             this.nsx39 = new Nsx39(nsx39);
         }
     }
-    load({tempos, programChanges, ustNotes, midiNotes}) {
+    load({tempos, controlChanges, programChanges, ustNotes, midiNotes}) {
         const shiftedTempos = tempos.slice(1).concat(new UstTempoMessage({when: Infinity}));
+        this.controlChanges = new ArrayAdvancer(controlChanges || []);
         this.programChanges = new ArrayAdvancer(programChanges || []);
         this.ustNotes = new ArrayAdvancer(tuning39({
             ...this,
@@ -46,6 +47,7 @@ export const nsx39Scheduler = new class {
         for (const [i, {bpm}] of tempos.entries()) {
             const {when} = shiftedTempos[i];
             for (const v of [
+                this.controlChanges,
                 this.programChanges,
                 this.ustNotes,
                 this.midiNotes
@@ -61,6 +63,7 @@ export const nsx39Scheduler = new class {
         this.duration = Math.max(...[ustNotes, midiNotes].filter(v => v?.length).map(v => v[v.length - 1]).map(v => v.when));
     }
     #init() {
+        this.controlChanges.done = false;
         this.programChanges.done = false;
         this.ustNotes.done = false;
         this.midiNotes.done = false;
@@ -69,6 +72,12 @@ export const nsx39Scheduler = new class {
     #update() {
         const now = performance.now();
         const when = now - this.startedTime + this.scheduledTime;
+        while (!this.controlChanges.done && this.controlChanges.head.when < when) {
+            const data = this.controlChanges.head;
+            const timestamp = data.when + this.startedTime;
+            this.nsx39.controlChange({data, timestamp});
+            this.controlChanges.advance();
+        }
         while (!this.programChanges.done && this.programChanges.head.when < when) {
             const data = this.programChanges.head;
             const timestamp = data.when + this.startedTime;
